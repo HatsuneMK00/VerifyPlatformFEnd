@@ -8,21 +8,7 @@
     </el-steps>
     <h4>正在验证……</h4>
     <div align="center">
-      <el-button type="primary" round @click="dialogVisible = true">后台运行</el-button>
-      <el-dialog
-        title="提示"
-        v-model="dialogVisible"
-        width="30%"
-        :before-close="handleClose"
-      >
-        <span>将跳回工具首页。验证结果可在历史记录中查看。</span>
-        <template #footer>
-    <span class="dialog-footer">
-      <el-button @click="dialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="dialogVisible = false;jump_to_index">确定</el-button>
-    </span>
-        </template>
-      </el-dialog>
+      <el-button type="primary" round @click="run_back">后台运行</el-button>
     </div>
   </div>
 </template>
@@ -31,8 +17,19 @@
 export default {
   name: 'Step2',
   methods: {
-    jump_to_index() {
-      this.$router.replace({ path: '/WiNR/index' })
+    run_back() {
+      this.$confirm('将跳回工具首页。验证结果可在历史记录中查看。是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$router.replace({ path: '/WiNR/index' })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
     }
   }
 }

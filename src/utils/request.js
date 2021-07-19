@@ -91,7 +91,9 @@ export default service
 tie url with baseURL and send get request
 ZZW 2021.7.19 10:49
 */
+const baseURL = 'http://219.228.60.69:9090'
 export const requestGet = (url, params) => {
+  console.log(baseURL + url)
   return axios({
     method: 'get',
     data: params,
@@ -105,6 +107,6 @@ export const requestGet = (url, params) => {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    url: `${service.baseURL}${url}`
+    url: `${baseURL}${url}`
   })
 }
