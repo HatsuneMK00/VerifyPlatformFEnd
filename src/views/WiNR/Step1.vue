@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { requestGet } from '../utils/request'
+import { requestGet } from '../../utils/request'
 export default {
   name: 'Step1',
   data() {
@@ -58,7 +58,7 @@ export default {
   methods: {
     submit_para() {
       // get verify_id
-      requestGet('/winr/verify_id')
+      requestGet('/winr/verify_id', null)
         .then((res) => {
           if (res.status === '200') {
             this.ParaPacket.verifyId = res.data.verifyId
