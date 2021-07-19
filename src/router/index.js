@@ -58,6 +58,12 @@ export const constantRoutes = [
         name: 'WiNR_step1',
         component: () => import('@/views/WiNR/Step1'),
         meta: { title: '选择参数', icon: 'table' }
+      },
+      {
+        path: 'step2',
+        name: 'WiNR_step2',
+        component: () => import('@/views/WiNR/Step2'),
+        meta: { title: '开始验证', icon: 'table' }
       }
     ]
   },

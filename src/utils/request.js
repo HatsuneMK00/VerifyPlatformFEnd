@@ -86,3 +86,25 @@ service.interceptors.response.use(
 )
 
 export default service
+
+/*
+tie url with baseURL and send get request
+ZZW 2021.7.19 10:49
+*/
+export const requestGet = (url, params) => {
+  return axios({
+    method: 'get',
+    data: params,
+    transformRequest: [function(data) {
+      let ret = ''
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    url: `${service.baseURL}${url}`
+  })
+}
