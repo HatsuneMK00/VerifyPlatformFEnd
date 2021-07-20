@@ -13,7 +13,15 @@ export default {
     ...mapGetters([
       'name',
       'userId'
-    ])
+    ]),
+    listenWebsocket() {
+      return this.$store.getters.message;
+    }
+  },
+  watch: {
+    listenWebsocket: function (message) {
+      console.log("receive new message")
+    }
   },
   created() {
     console.log("userId is " + this.$store.getters.userId)

@@ -33,6 +33,9 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           await store.dispatch('user/getInfo')
+          let userId = store.getters.userId
+          console.log("userId is from permission.js: " + userId)
+          await store.dispatch('websocket/WEBSOCKET_INIT', 'ws://219.228.60.69:9090/notification?id=' + userId);
 
           next()
         } catch (error) {
