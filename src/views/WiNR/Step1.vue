@@ -44,8 +44,8 @@
       <el-form-item label="数据集：">
         <!--        <el-input type="text" v-model="ParaPack.dataset" clearable></el-input>-->
         <el-select v-model="ParaPacket.dataset" placeholder="请选择数据集">
-          <el-option label="fashion_mnist" value="fashion_mnist"></el-option>
           <el-option label="cifar10" value="cifar10"></el-option>
+          <el-option label="fashion_mnist" value="fashion_mnist"></el-option>
           <el-option label="gtsrb" value="gtsrb"></el-option>
         </el-select>
       </el-form-item>
@@ -74,53 +74,72 @@ export default {
         epsilon: '',
         dataset: '',
         imageNum: ''
+      },
+      Flag: {
+        isSubmitSuccess: 'f'
       }
     }
   },
   methods: {
     async submit_para() {
       // get verify_id and put into ParaPacket
-      requestGet('/verify/verify_id', null)
+      this.$axios
+        .get('/verify/verify_id')
         .then((res) => {
           this.ParaPacket.verifyId = res.data.data.verifyId
           // console.log(res)
-          console.log(this.ParaPacket)
-          this.$alert('验证编号为：' + this.ParaPacket.verifyId, '提示', {
-            confirmButtonText: '确定',
-            callback: (action) => {
-            }
-          })
+          // console.log(this.ParaPacket)
         })
         .catch(function(error) {
           console.log(error)
         })
-      // post parameter, bug: websocket unrealized
+      // post parameter, problem: websocket unrealized
       this.$axios
-        .post('/verify/winr/888', this.ParaPacket)
+        .post('/verify/winr/' + this.$store.getters.userId, this.ParaPacket)
         .then((res) => {
           console.log(res)
-          if (res.data.data.status === '200') {
+          if (res.data.status === 200) {
+            this.Flag.isSubmitSuccess = 't'
             this.$alert('验证提交成功。验证编号为：' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
               callback: (action) => {
               }
             })
-          } else if (res.data.data.status === '-100') {
-            this.$message('失败！Websocket未建立。')
-          } else if (res.data.data.status === '-400') {
-            this.$message('失败！参数错误。')
+          } else if (res.data.status === -100) {
+            this.$alert('验证提交失败！Websocket未建立。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
+              confirmButtonText: '确定',
+              callback: (action) => {
+              }
+            })
+          } else if (res.data.status === -400) {
+            this.$alert('验证提交失败！参数错误。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
+              confirmButtonText: '确定',
+              callback: (action) => {
+              }
+            })
           } else {
-            this.$message('失败！未知原因。')
+            this.$alert('验证提交失败！未知原因。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
+              confirmButtonText: '确定',
+              callback: (action) => {
+              }
+            })
           }
         })
         .catch(function(error) {
           console.log(error)
         })
       // jump to next page
-      this.next_step()
+      if (this.Flag.isSubmitSuccess === 't'){
+        this.next_step()
+      } else {
+        this.to_index()
+      }
     },
     next_step() {
       this.$router.replace({ path: '/WiNR/step2' })
+    },
+    to_index() {
+      this.$router.replace({ path: '/WiNR/index' })
     }
   }
 }
