@@ -74,31 +74,48 @@ export default {
         epsilon: '',
         dataset: '',
         imageNum: ''
-      },
-      MessPacket: {
-        mess: ''
       }
     }
   },
   methods: {
-    submit_para() {
+    async submit_para() {
       // get verify_id and put into ParaPacket
-      requestGet('/winr/verify_id', null)
+      requestGet('/verify/verify_id', null)
         .then((res) => {
           this.ParaPacket.verifyId = res.data.data.verifyId
           // console.log(res)
-          // console.log(this.ParaPacket)
-          this.MessPacket.mess = '验证编号为：' + this.ParaPacket.verifyId.toString()
-          console.log(this.MessPacket)
+          console.log(this.ParaPacket)
+          this.$alert('验证编号为：' + this.ParaPacket.verifyId, '提示', {
+            confirmButtonText: '确定',
+            callback: (action) => {
+            }
+          })
         })
         .catch(function(error) {
           console.log(error)
         })
-      // show verifyId, bug
-      this.$alert('验证编号为：' + this.ParaPacket.verifyId.toString(), '提示', {
-        confirmButtonText: '继续'
-      })
-      // post parameter, not realized
+      // post parameter, bug: websocket unrealized
+      this.$axios
+        .post('/verify/winr/888', this.ParaPacket)
+        .then((res) => {
+          console.log(res)
+          if (res.data.data.status === '200') {
+            this.$alert('验证提交成功。验证编号为：' + this.ParaPacket.verifyId, '提示', {
+              confirmButtonText: '确定',
+              callback: (action) => {
+              }
+            })
+          } else if (res.data.data.status === '-100') {
+            this.$message('失败！Websocket未建立。')
+          } else if (res.data.data.status === '-400') {
+            this.$message('失败！参数错误。')
+          } else {
+            this.$message('失败！未知原因。')
+          }
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
       // jump to next page
       this.next_step()
     },
