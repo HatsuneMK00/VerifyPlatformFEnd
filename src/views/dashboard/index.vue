@@ -14,13 +14,13 @@ export default {
       'name',
       'userId'
     ]),
-    listenWebsocket() {
+    onWebSocketMessage() {
       return this.$store.getters.message;
     }
   },
   watch: {
-    listenWebsocket: function (message) {
-      console.log("receive new message")
+    onWebSocketMessage: function (message) {
+      console.log("receive new message" + message)
     }
   },
   created() {
