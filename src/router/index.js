@@ -52,6 +52,18 @@ export const constantRoutes = [
         name: 'WiNR',
         component: () => import('@/views/WiNR/index'),
         meta: { title: 'WiNR', icon: 'table' }
+      },
+      {
+        path: 'step1',
+        name: 'WiNR_step1',
+        component: () => import('@/views/WiNR/Step1'),
+        meta: { title: '选择参数', icon: 'table' }
+      },
+      {
+        path: 'step2',
+        name: 'WiNR_step2',
+        component: () => import('@/views/WiNR/Step2'),
+        meta: { title: '开始验证', icon: 'table' }
       }
     ]
   },
@@ -67,7 +79,18 @@ export const constantRoutes = [
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
-
+  {
+    path: '/history',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'History',
+        component: () => import('@/views/history/index'),
+        meta: { title: 'History', icon: 'form' }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,
