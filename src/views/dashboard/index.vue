@@ -14,6 +14,9 @@ export default {
       'name',
       'userId'
     ])
+  },
+  created() {
+    console.log("userId is " + this.$store.getters.userId)
   }
 }
 </script>
