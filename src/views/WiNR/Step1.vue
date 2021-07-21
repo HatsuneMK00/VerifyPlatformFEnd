@@ -62,7 +62,6 @@
 </template>
 
 <script>
-import { requestGet } from '../../utils/request'
 
 export default {
   name: 'Step1',
@@ -74,37 +73,57 @@ export default {
         epsilon: '',
         dataset: '',
         imageNum: ''
-      },
-      Flag: {
-        isSubmitSuccess: 'f'
       }
     }
   },
   methods: {
     async submit_para() {
+      this.get_vid()
+      // post parameter, if success, will jump to next page
+      this.post_para()
+      // jump to winr/index
+      this.to_index()
+    },
+    next_step() {
+      this.$router.replace({ path: '/WiNR/step2' })
+    },
+    to_index() {
+      this.$router.replace({ path: '/WiNR/index' })
+    },
+    get_vid() {
+      console.log('get_vid')
       // get verify_id and put into ParaPacket
       this.$axios
         .get('/verify/verify_id')
         .then((res) => {
           this.ParaPacket.verifyId = res.data.data.verifyId
-          // console.log(res)
+          console.log(res)
           // console.log(this.ParaPacket)
         })
         .catch(function(error) {
           console.log(error)
         })
-      // post parameter, problem: websocket unrealized
+      console.log(this.ParaPacket)
+      console.log('get_vid2')
+    },
+    post_para() {
+      console.log('post_para')
+      console.log(this.ParaPacket)
+      console.log('post_para2')
+      // post parameter
       this.$axios
         .post('/verify/winr/' + this.$store.getters.userId, this.ParaPacket)
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            this.Flag.isSubmitSuccess = 't'
+            console.log(this.ParaPacket)
             this.$alert('验证提交成功。验证编号为：' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
               callback: (action) => {
               }
             })
+            // submit success, to next page
+            this.next_step()
           } else if (res.data.status === -100) {
             this.$alert('验证提交失败！Websocket未建立。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
@@ -113,6 +132,12 @@ export default {
             })
           } else if (res.data.status === -400) {
             this.$alert('验证提交失败！参数错误。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
+              confirmButtonText: '确定',
+              callback: (action) => {
+              }
+            })
+          } else if (res.data.status === 410) {
+            this.$alert('验证提交失败！缺少VID。将返回工具首页。' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
               callback: (action) => {
               }
@@ -128,18 +153,6 @@ export default {
         .catch(function(error) {
           console.log(error)
         })
-      // jump to next page
-      if (this.Flag.isSubmitSuccess === 't'){
-        this.next_step()
-      } else {
-        this.to_index()
-      }
-    },
-    next_step() {
-      this.$router.replace({ path: '/WiNR/step2' })
-    },
-    to_index() {
-      this.$router.replace({ path: '/WiNR/index' })
     }
   }
 }
