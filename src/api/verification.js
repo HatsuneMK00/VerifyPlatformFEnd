@@ -1,8 +1,8 @@
 import request from '@/utils/request'
-export function verification(verifyID) {
+export function verification(verifyId) {
   return request({
     url: '/verify/verification',
     method: 'get',
-    params: { verifyID: verifyID }
+    params: { verifyId: verifyId }
   })
 }
