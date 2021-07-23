@@ -39,12 +39,15 @@ ZZW 2021.7.20 12:25
  */
 import axios from 'axios'
 import qs from 'qs'
-Vue.prototype.$axios = axios.create({
-  baseURL: 'http://219.228.60.69:9090',
-  transformRequest: [
-    data => qs.stringify(data)
-  ]
-})
+
+Vue.prototype.$axios = axios.create(
+  {
+    baseURL: 'http://219.228.60.69:9090',
+    transformRequest: [
+      data => qs.stringify(data)
+    ]
+  }
+)
 
 Vue.config.productionTip = false
 

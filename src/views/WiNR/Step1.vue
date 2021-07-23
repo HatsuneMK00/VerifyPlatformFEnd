@@ -12,27 +12,27 @@
         <el-select v-model="ParaPacket.model" placeholder="请选择网络模型">
           <el-option
             label="cifar10_cnn_lenet_averpool_sigmoid_myself"
-            value="cifar10_cnn_lenet_averpool_sigmoid_myself"
+            value="models/cifar10_cnn_lenet_averpool_sigmoid_myself.h5"
           ></el-option>
           <el-option
             label="fashion_mnist_cnn_4layer_5_3_sigmoid_myself"
-            value="fashion_mnist_cnn_4layer_5_3_sigmoid_myself"
+            value="models/fashion_mnist_cnn_4layer_5_3_sigmoid_myself.h5"
           ></el-option>
           <el-option
             label="fashion_mnist_cnn_6layer_5_3_sigmoid_myself"
-            value="fashion_mnist_cnn_6layer_5_3_sigmoid_myself"
+            value="models/fashion_mnist_cnn_6layer_5_3_sigmoid_myself.h5"
           ></el-option>
           <el-option
             label="fashion_mnist_cnn_8layer_5_3_sigmoid_myself"
-            value="fashion_mnist_cnn_8layer_5_3_sigmoid_myself"
+            value="models/fashion_mnist_cnn_8layer_5_3_sigmoid_myself.h5"
           ></el-option>
           <el-option
             label="fashion_mnist_cnn_10layer_5_3_sigmoid_myself"
-            value="fashion_mnist_cnn_10layer_5_3_sigmoid_myself"
+            value="models/fashion_mnist_cnn_10layer_5_3_sigmoid_myself.h5"
           ></el-option>
           <el-option
             label="gtsrb_cnn_5layer_sigmoid_myself"
-            value="gtsrb_cnn_5layer_sigmoid_myself"
+            value="models/gtsrb_cnn_5layer_sigmoid_myself.h5"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -78,10 +78,11 @@ export default {
   },
   methods: {
     async submit_para() {
-      this.get_vid()
+      // get verify_id and put into ParaPacket
+      await this.get_vid()
       // post parameter, if success, will jump to next page
       this.post_para()
-      // jump to winr/index
+      // jump to /winr/index
       this.to_index()
     },
     next_step() {
@@ -90,33 +91,24 @@ export default {
     to_index() {
       this.$router.replace({ path: '/WiNR/index' })
     },
-    get_vid() {
-      console.log('get_vid')
+    async get_vid() {
       // get verify_id and put into ParaPacket
-      this.$axios
+      await this.$axios
         .get('/verify/verify_id')
         .then((res) => {
           this.ParaPacket.verifyId = res.data.data.verifyId
-          console.log(res)
-          // console.log(this.ParaPacket)
         })
         .catch(function(error) {
           console.log(error)
         })
-      console.log(this.ParaPacket)
-      console.log('get_vid2')
     },
-    post_para() {
-      console.log('post_para')
-      console.log(this.ParaPacket)
-      console.log('post_para2')
+    async post_para() {
       // post parameter
-      this.$axios
+      await this.$axios
         .post('/verify/winr/' + this.$store.getters.userId, this.ParaPacket)
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           if (res.data.status === 200) {
-            console.log(this.ParaPacket)
             this.$alert('验证提交成功。验证编号为：' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
               callback: (action) => {
