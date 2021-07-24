@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { get, post } from "./indexByQzt";
 export default {
   name: 'Show',
   data() {
@@ -51,6 +52,24 @@ export default {
         avg_robustness: '',
         avg_run_time: ''
       }]
+    }
+  },
+  methods: {
+    verify: function() {
+      get('/verify/verification', this.verifyId)
+        .then((res) => {
+          if (res.status == 200){
+            this.tableData[0].model_name=res.data.result.model_name
+            this.tableData[0].num_image=res.data.result.numimage
+            this.tableData[0].target_type=res.data.result.targettype
+            this.tableData[0].avg_robustness=res.data.result.avg_robustness
+            this.tableData[0].avg_run_time=res.data.result.avg_run_time
+          }
+          else if(res.status == -500){
+            this.notify("参数有误", "error");
+          }
+
+      })
     }
   }
 }
