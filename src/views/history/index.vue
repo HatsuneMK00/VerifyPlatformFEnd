@@ -85,9 +85,8 @@ export default {
     },
     checkResult(row) {
       this.$router.replace({
-        // path: '/WiNR/Step3', // real use
-        path: '/WiNR/index', // test
-        vid: row.verifyId
+        path: '/WiNR/Step3',
+        query: { verifyId: row.verifyId }
       })
     },
     tableRowClassName({ row, rowIndex }) {
