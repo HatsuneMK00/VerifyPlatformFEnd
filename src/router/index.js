@@ -79,6 +79,13 @@ export const constantRoutes = [
         name: 'DeepCert',
         component: () => import('@/views/DeepCert/index'),
         meta: { title: 'DeepCert', icon: 'table' }
+      },
+      {
+        path: 'show',
+        name: 'Show',
+        component: () => import('@/views/DeepCert/show'),
+        meta: { title: 'Show', icon: 'table' },
+        hidden: true
       }
     ]
   },
