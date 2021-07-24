@@ -80,6 +80,31 @@ export default {
       }],
       loading: true
     }
+  },
+  computed: {
+    onWebSocketMessage() {
+      return this.$store.getters.message
+    }
+  },
+  watch: {
+    onWebSocketMessage: function(msg) {
+      console.log(msg)
+      var succ = msg.slice(7, 11)
+      if (succ === 'succ') {
+        var verifyId = msg.split(':')[1]
+        if (verifyId === null) {
+          console.log('doesn\'t get verify id, exit')
+          return
+        }
+        this.$router.replace({
+          // path: '/WiNR/Step3', // real use
+          path: '/WiNR/index', // test
+          vid: verifyId
+        })
+      } else {
+        console.log('verify failed')
+      }
+    }
   }
 }
 </script>
