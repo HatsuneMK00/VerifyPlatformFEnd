@@ -7,38 +7,40 @@
       <el-table
         :data="tableData"
         stripe
-        style="width: 100%">
+        style="width: 100%"
+      >
         <el-table-column
           prop="model_name"
           label="model_name"
-          width="200">
-        </el-table-column>
+          width="200"
+        />
         <el-table-column
           prop="num_image"
           label="num_image"
-          width="200">
-        </el-table-column>
+          width="200"
+        />
         <el-table-column
           prop="target_type"
           label="target_type"
-          width="200">
-        </el-table-column>
+          width="200"
+        />
         <el-table-column
           prop="avg_robustness"
           label="avg_robustness"
-          width="200">
-        </el-table-column>
+          width="200"
+        />
         <el-table-column
           prop="avg_run_time"
           label="avg_run_time"
-          width="200">
-        </el-table-column>
+          width="200"
+        />
       </el-table>
     </div>
   </div>
 </template>
 
 <script>
+import { get } from './indexByQzt'
 export default {
   name: 'Show',
   data() {
@@ -52,6 +54,21 @@ export default {
         avg_run_time: ''
       }]
     }
+  },
+  created: function() {
+    get('/verify/verification', 'e2f7100781c54416be110f6a274dd766').then((res) => {
+      if (res.status === 200) {
+        this.tableData[0].model_name = res.data.result.model_name
+        this.tableData[0].num_image = res.data.result.numimage
+        this.tableData[0].target_type = res.data.result.targettype
+        this.tableData[0].avg_robustness = res.data.result.avg_robustness
+        this.tableData[0].avg_run_time = res.data.result.avg_run_time
+      } else if (res.status === -500) {
+        this.notify('参数有误', 'error')
+      } else {
+        alert('错误')
+      }
+    })
   }
 }
 
