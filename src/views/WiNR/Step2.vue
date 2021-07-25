@@ -97,9 +97,8 @@ export default {
           return
         }
         this.$router.replace({
-          // path: '/WiNR/Step3', // real use
-          path: '/WiNR/index', // test
-          vid: verifyId
+          path: '/WiNR/Step3',
+          query: { verifyId: verifyId }
         })
       } else {
         console.log('verify failed')
