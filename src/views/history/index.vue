@@ -84,10 +84,26 @@ export default {
         })
     },
     checkResult(row) {
-      this.$router.replace({
-        path: '/WiNR/Step3',
-        query: { verifyId: row.verifyId }
-      })
+      if (row.status === '运行中') {
+        this.$alert('验证正在运行，不能查看结果。请稍等并刷新页面重试。', '提示', {
+          confirmButtonText: '确定',
+          callback: (action) => {
+          }
+        })
+        return
+      }
+      if (row.tool === 'WiNR') {
+        this.$router.replace({
+          path: '/WiNR/Step3',
+          query: { verifyId: row.verifyId }
+        })
+      }
+      if (row.tool === 'DeepCert') {
+        this.$router.replace({
+          path: '/', // should go to the result page of DeepCert
+          query: { verifyId: row.verifyId }
+        })
+      }
     },
     tableRowClassName({ row, rowIndex }) {
       var re = ''
