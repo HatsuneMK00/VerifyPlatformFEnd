@@ -47,7 +47,7 @@ export default {
     return {
       verifyId: 'e2f7100781c54416be110f6a274dd766',
       tableData: [{
-        model_name: 'asc',
+        model_name: '',
         num_image: '',
         target_type: '',
         avg_robustness: '',
