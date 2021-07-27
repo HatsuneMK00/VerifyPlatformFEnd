@@ -49,11 +49,23 @@
           <el-option label="gtsrb" value="gtsrb"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="图片数量：">
-        <el-col :span="6">
-          <el-input type="text" v-model="ParaPacket.imageNum" clearable></el-input>
-        </el-col>
+      <el-form-item>
+        <el-upload
+          class="upload-demo"
+          action="http://219.228.60.69:9090/winr/images"
+          name="images"
+          multiple
+          :limit="3"
+          :file-list="fileList">
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
       </el-form-item>
+<!--      <el-form-item label="图片数量：">-->
+<!--        <el-col :span="6">-->
+<!--          <el-input type="text" v-model="ParaPacket.imageNum" clearable></el-input>-->
+<!--        </el-col>-->
+<!--      </el-form-item>-->
     </el-form>
     <div align="center">
       <el-button type="primary" round @click="submit_para">下一步</el-button>
@@ -73,7 +85,8 @@ export default {
         epsilon: '',
         dataset: '',
         imageNum: ''
-      }
+      },
+      fileList: [],
     }
   },
   methods: {
