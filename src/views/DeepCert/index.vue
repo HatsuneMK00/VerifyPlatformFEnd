@@ -11,85 +11,85 @@
 
       <div style="text-align:center;padding:30px" >
         <transition name="el-zoom-in-center">
-            <el-button round @click="show" v-show="!isDisplay">开始使用DeepCert！</el-button>
+          <el-button round @click="show" v-show="!isDisplay">开始使用DeepCert！</el-button>
         </transition>
       </div>
 
       <transition name="el-fade-in">
-      <div class="main" v-show="isDisplay">
-        <el-form :model="ruleForm" ref="ruleFrom">
-          <el-form-item prop="core" label="请选择是否启用Core">
-            <el-radio v-model="ruleForm.core" label="True">True</el-radio>
-            <el-radio v-model="ruleForm.core" label="False">False</el-radio>
-          </el-form-item>
-          <el-form-item
-            prop="netName"
-            label="请选择模型"
-            v-if="ruleForm.core === 'False'"
-          >
-            <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
-              <el-option
-                v-for="item in options1"
-                :key="item.value"
-                :label="item.value"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            prop="netName"
-            label="请选择模型"
-            v-else-if="ruleForm.core === 'True'"
-          >
-            <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
-              <el-option
-                v-for="item in options2"
-                :key="item.value"
-                :label="item.value"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="netName" label="请选择模型" v-else>
-            <el-select v-model="ruleForm.netName" placeholder="请先选择core">
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="numOfImage" label="请选择图片数量">
-            <el-input
-              v-model="ruleForm.numOfImage"
-              placeholder="请输入图片数量"
-            ></el-input>
-          </el-form-item>
-          <el-form-item prop="norm" label="请选择范数">
-            <el-radio v-model="ruleForm.norm" label="1">1</el-radio>
-            <el-radio v-model="ruleForm.norm" label="2">2</el-radio>
-            <el-radio v-model="ruleForm.norm" label="i">i</el-radio>
-          </el-form-item>
-          <el-form-item prop="activation" label="请选择activation">
-            <el-radio v-model="ruleForm.activation" label="sigmoid">sigmoid</el-radio>
-            <el-radio v-model="ruleForm.activation" label="tanh">tanh</el-radio>
-            <el-radio v-model="ruleForm.activation" label="atan">atan</el-radio>
-          </el-form-item>
-          <el-form-item prop="isCifar" label="请选择是否启用cifar">
-            <el-radio v-model="ruleForm.isCifar" label="True">True</el-radio>
-            <el-radio v-model="ruleForm.isCifar" label="False">False</el-radio>
-          </el-form-item>
-        </el-form>
-        <span slot="footer">
+        <div class="main" v-show="isDisplay">
+          <el-form :model="ruleForm" ref="ruleFrom">
+            <el-form-item prop="core" label="请选择是否启用Core">
+              <el-radio v-model="ruleForm.core" label="True">True</el-radio>
+              <el-radio v-model="ruleForm.core" label="False">False</el-radio>
+            </el-form-item>
+            <el-form-item
+              prop="netName"
+              label="请选择模型"
+              v-if="ruleForm.core === 'False'"
+            >
+              <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
+                <el-option
+                  v-for="item in options1"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item
+              prop="netName"
+              label="请选择模型"
+              v-else-if="ruleForm.core === 'True'"
+            >
+              <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
+                <el-option
+                  v-for="item in options2"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item prop="netName" label="请选择模型" v-else>
+              <el-select v-model="ruleForm.netName" placeholder="请先选择core">
+              </el-select>
+            </el-form-item>
+            <el-form-item prop="numOfImage" label="请选择图片数量">
+              <el-input
+                v-model="ruleForm.numOfImage"
+                placeholder="请输入图片数量"
+              ></el-input>
+            </el-form-item>
+            <el-form-item prop="norm" label="请选择范数">
+              <el-radio v-model="ruleForm.norm" label="1">1</el-radio>
+              <el-radio v-model="ruleForm.norm" label="2">2</el-radio>
+              <el-radio v-model="ruleForm.norm" label="i">i</el-radio>
+            </el-form-item>
+            <el-form-item prop="activation" label="请选择activation">
+              <el-radio v-model="ruleForm.activation" label="sigmoid">sigmoid</el-radio>
+              <el-radio v-model="ruleForm.activation" label="tanh">tanh</el-radio>
+              <el-radio v-model="ruleForm.activation" label="atan">atan</el-radio>
+            </el-form-item>
+            <el-form-item prop="isCifar" label="请选择是否启用cifar">
+              <el-radio v-model="ruleForm.isCifar" label="True">True</el-radio>
+              <el-radio v-model="ruleForm.isCifar" label="False">False</el-radio>
+            </el-form-item>
+          </el-form>
+          <span slot="footer">
           <el-button @click="verify">开始计算鲁棒半径</el-button>
         </span>
-      </div>
+        </div>
       </transition>
     </div>
 
     <el-dialog :visible.sync="waitingVisible" width="400px" center>
-        <div v-loading="loading" element-loading-text="拼命计算中" style="height:100px"></div>
-        <div style="height:65px;text-align:center;padding:20px">正在计算，请耐心等待</div>
-        <div style="text-align:center">
-            <el-button @click="back">后台运行</el-button>
-        </div>
+      <div v-loading="loading" element-loading-text="拼命计算中" style="height:100px"></div>
+      <div style="height:65px;text-align:center;padding:20px">正在计算，请耐心等待</div>
+      <div style="text-align:center">
+        <el-button @click="back">后台运行</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -205,7 +205,7 @@ export default {
   },
   methods: {
     show(){
-        this.isDisplay = true;
+      this.isDisplay = true;
     },
     notify(title, type) {
       this.$notify({
@@ -216,14 +216,16 @@ export default {
     verify() {
       const getVerifyId = (params) => get(`/verify/verify_id`);
       getVerifyId().then((res) => {
+        this.ruleForm.verifyId = res.data.verifyId;
         if (res.status == 200) {
-          this.ruleForm.verifyId = res.data.verifyId;
           this.notify("获取verifyId成功", "success");
+          console.log(this.ruleForm.verifyId)
         } else {
           this.notify("获取verifyId失败", "error");
         }
       });
       let params = new URLSearchParams();
+      console.log(this.ruleForm.verifyId)
       params.append("verifyId", this.ruleForm.verifyId);
       params.append("netName", this.ruleForm.netName);
       params.append("numOfImage", this.ruleForm.numOfImage);
@@ -244,7 +246,7 @@ export default {
             this.notify("参数有误", "error");
           }
           else if(res.status == -100){
-            this.notify("websocket未建立", "error");S
+            this.notify("websocket未建立", "error");
           }
           else{
             this.notify("未知错误", "error");
@@ -252,10 +254,42 @@ export default {
         })
     },
     back(){
-        this.loading = false;
-        this.waitingVisible = false;
+      this.loading = false;
+      this.waitingVisible = false;
     }
   },
+  computed: {
+    onWebSocketMessage() {
+      console.log('sfdj')
+      return this.$store.getters.message
+    }
+  },
+  watch: {
+    onWebSocketMessage: function(msg) {
+      console.log(msg)
+      var succ = msg.slice(7, 11)
+      if (succ === 'succ') {
+        var verifyId = msg.split(':')[1]
+        if (verifyId == null) {
+          console.log('doesn\'t get verify id, exit')
+          return
+        }
+        this.$router.replace({
+          path: '/DeepCert/show',
+          query: { verifyId: verifyId }
+        })
+      } else {
+        console.log('verify failed')
+        this.back()
+        this.$confirm('验证结果失败', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        }).then(() => {
+          this.$router.replace({ path: '/DeepCert/index' })
+        })
+      }
+    }
+  }
 };
 </script>
 

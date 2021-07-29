@@ -34,17 +34,17 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="验证ID" prop="verifyId"></el-table-column>
-      <el-table-column label="验证工具" prop="tool"></el-table-column>
-      <el-table-column label="开始时间" prop="startTime"></el-table-column>
-      <el-table-column label="当前状态" prop="status"></el-table-column>
+      <el-table-column label="验证ID" prop="verifyId" />
+      <el-table-column label="验证工具" prop="tool" />
+      <el-table-column label="开始时间" prop="startTime" />
+      <el-table-column label="当前状态" prop="status" />
       <el-table-column
         fixed="right"
         label="操作"
         width="100"
       >
         <template #default="scope">
-          <el-button @click="checkResult(scope.row)" type="text" size="small">查看结果</el-button>
+          <el-button type="text" size="small" @click="checkResult(scope.row)">查看结果</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -58,6 +58,9 @@ export default {
     return {
       recordTableData: []
     }
+  },
+  mounted: function() {
+    this.GetRecord()
   },
   methods: {
     GetRecord() {
@@ -84,10 +87,17 @@ export default {
         })
     },
     checkResult(row) {
-      this.$router.replace({
-        path: '/WiNR/Step3',
-        query: { verifyId: row.verifyId }
-      })
+      if (row.tool === 'WiNR') {
+        this.$router.replace({
+          path: '/WiNR/Step3',
+          query: { verifyId: row.verifyId }
+        })
+      } else {
+        this.$router.replace({
+          path: '/DeepCert/show',
+          query: { verifyId: row.verifyId }
+        })
+      }
     },
     tableRowClassName({ row, rowIndex }) {
       var re = ''
@@ -102,9 +112,6 @@ export default {
       }
       return re
     }
-  },
-  mounted: function() {
-    this.GetRecord()
   }
 }
 </script>
