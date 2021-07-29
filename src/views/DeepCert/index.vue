@@ -244,7 +244,7 @@ export default {
             this.notify("参数有误", "error");
           }
           else if(res.status == -100){
-            this.notify("websocket未建立", "error");
+            this.notify("websocket未建立", "error");S
           }
           else{
             this.notify("未知错误", "error");
