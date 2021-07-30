@@ -33,6 +33,22 @@ Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
 
+/*
+Use axois
+ZZW 2021.7.20 12:25
+ */
+import axios from 'axios'
+import qs from 'qs'
+
+Vue.prototype.$axios = axios.create(
+  {
+    baseURL: 'http://219.228.60.69:9090',
+    transformRequest: [
+      data => qs.stringify(data)
+    ]
+  }
+)
+
 Vue.config.productionTip = false
 
 new Vue({

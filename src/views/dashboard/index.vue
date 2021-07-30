@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">name: {{ name }}, userId: {{ userId }}</div>
   </div>
 </template>
 
@@ -11,8 +11,20 @@ export default {
   name: 'Dashboard',
   computed: {
     ...mapGetters([
-      'name'
-    ])
+      'name',
+      'userId'
+    ]),
+    onWebSocketMessage() {
+      return this.$store.getters.message;
+    }
+  },
+  watch: {
+    onWebSocketMessage: function (message) {
+      console.log("receive new message" + message)
+    }
+  },
+  created() {
+    console.log("userId is " + this.$store.getters.userId)
   }
 }
 </script>

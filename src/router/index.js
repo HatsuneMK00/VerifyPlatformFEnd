@@ -54,10 +54,45 @@ export const constantRoutes = [
         meta: { title: 'WiNR', icon: 'table' }
       },
       {
+        path: 'step1',
+        name: 'WiNR_step1',
+        component: () => import('@/views/WiNR/Step1'),
+        meta: { title: '选择参数', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'step2',
+        name: 'WiNR_step2',
+        component: () => import('@/views/WiNR/Step2'),
+        meta: { title: '开始验证', icon: 'table' },
+        hidden: true
+      },
+      {
         path: 'step3',
         name: 'WiNR_step3',
         component: () => import('@/views/WiNR/Step3'),
-        meta: { title: '查看结果', icon: 'table' }
+        meta: { title: '查看结果', icon: 'table' },
+        hidden: true
+      }
+    ]
+  },
+
+  {
+    path: '/DeepCert',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'DeepCert',
+        component: () => import('@/views/DeepCert/index'),
+        meta: { title: 'DeepCert', icon: 'table' }
+      },
+      {
+        path: 'show',
+        name: 'Show',
+        component: () => import('@/views/DeepCert/show'),
+        meta: { title: 'Show', icon: 'table' },
+        hidden: true
       }
     ]
   },
@@ -65,46 +100,18 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
+    redirect: '/WiNR/index'
   },
 
   {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
+    path: '/history',
     component: Layout,
     children: [
       {
         path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        name: 'History',
+        component: () => import('@/views/history/index'),
+        meta: { title: '历史记录', icon: 'form' }
       }
     ]
   },
