@@ -45,9 +45,9 @@ export default {
   name: 'Show',
   data() {
     return {
-      verifyId: 'e2f7100781c54416be110f6a274dd766',
+      verifyId: '',
       tableData: [{
-        model_name: 'asc',
+        model_name: '',
         num_image: '',
         target_type: '',
         avg_robustness: '',
@@ -55,20 +55,25 @@ export default {
       }]
     }
   },
-  created: function() {
-    get('/verify/verification', 'e2f7100781c54416be110f6a274dd766').then((res) => {
-      if (res.status === 200) {
+  mounted() {
+    this.getDatefrom()
+  },
+  methods: {
+    getDatefrom() {
+      this.verifyId = this.$route.query.verifyId
+      const params = new URLSearchParams()
+      params.append('verifyId', this.verifyId)
+      const verifyDeepCert = (params) =>
+        get(`/verify/verification`, params)
+      verifyDeepCert(params).then(res => {
+        console.log(res)
         this.tableData[0].model_name = res.data.result.model_name
+        this.tableData[0].avg_run_time = res.data.result.avg_run_time
+        this.tableData[0].avg_robustness = res.data.result.avg_robustness
         this.tableData[0].num_image = res.data.result.numimage
         this.tableData[0].target_type = res.data.result.targettype
-        this.tableData[0].avg_robustness = res.data.result.avg_robustness
-        this.tableData[0].avg_run_time = res.data.result.avg_run_time
-      } else if (res.status === -500) {
-        this.notify('参数有误', 'error')
-      } else {
-        alert('错误')
-      }
-    })
+      })
+    }
   }
 }
 
