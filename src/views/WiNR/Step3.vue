@@ -10,7 +10,7 @@
       :data="tableData"
       cell-style="font-size: 16px"
       header-cell-style="font-size: 16px"
-      style="width: 60%; margin: 30px auto 30px auto">
+      style="width: 60%; margin: 30px auto 20px auto">
       <el-table-column
         prop="tool"
         label="工具"
@@ -35,8 +35,14 @@
         align="center">
       </el-table-column>
     </el-table>
-    <el-row v-for="image in images" :key="image.imageId" class="row" type="flex" justify="center">
-      <el-col :span="8">
+    <el-row v-for="image in images" :key="image.imageId" class="row">
+      <el-divider></el-divider>
+      <el-col :span="4" class="col">
+        <div align="middle" style="margin-top: 200px">
+          <span class="title">测试用例{{ image.imageId+1 }}</span>
+        </div>
+      </el-col>
+      <el-col :span="8" class="col">
         <el-card align="middle" :body-style="{ padding: '20px' }">
           <div class="description">
             <span class="title">原始图片</span>
@@ -49,12 +55,12 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="8">
-        <el-card align="middle" :body-style="{ padding: '20px' }">
+      <el-col :span="8" class="col">
+        <el-card align="middle" :body-style="{ padding: '20px 0 20px 0' }">
           <div v-if="image.unrobust === 'True'" class="description">
-            <span class="title">扰动半径为</span>
-            <span style="font-size: 20px; font-weight: 500"> {{ image.eps }} </span>
-            <span class="title">的对抗样本</span>
+            <span class="title_thin">扰动半径</span>
+            <span style="font-size: 20px; font-weight: 500"> epsilon = {{ image.eps }} </span>
+            <span class="title_thin">时的对抗样本</span>
           </div>
           <div v-else class="description">
             <span class="title">无对抗样本</span>
@@ -69,10 +75,10 @@
             <img :src="image.advExamples" class="image">
           </div>
           <div v-if="image.robust === 'True'" class="description">
-            <span>此图片已为鲁棒的</span>
+            <span>该图片在该扰动半径下是鲁棒的</span>
           </div>
           <div v-else-if="image.misclassified === 'True'" class="description">
-            <span>此图片神经网络未正确分类，不进行鲁棒性验证</span>
+            <span>该图片神经网络未正确分类，不进行鲁棒性验证</span>
           </div>
           <div v-else class="description">
             <span>标签: {{ image.advLabel }}</span>
@@ -85,7 +91,10 @@
 
 <style scoped>
 .row {
-  margin: 20px 0px 20px 0px
+  margin: 0;
+}
+.col {
+  margin: 10px 0 10px 0;
 }
 .image {
   object-fit: contain;
@@ -110,6 +119,11 @@
   font-size: 20px;
   font-weight: 500;
   letter-spacing: 3px;
+}
+.title_thin {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 2px;
 }
 </style>
 
