@@ -216,14 +216,15 @@ export default {
     verify() {
       const getVerifyId = (params) => get(`/verify/verify_id`);
       getVerifyId().then((res) => {
-        this.ruleForm.verifyId = res.data.verifyId;
         if (res.status == 200) {
           this.notify("获取verifyId成功", "success");
+          this.ruleForm.verifyId = res.data.verifyId;
           console.log(this.ruleForm.verifyId)
         } else {
           this.notify("获取verifyId失败", "error");
         }
       });
+
       let params = new URLSearchParams();
       console.log(this.ruleForm.verifyId)
       params.append("verifyId", this.ruleForm.verifyId);
@@ -250,6 +251,7 @@ export default {
           }
           else{
             this.notify("未知错误", "error");
+
           }
         })
     },
