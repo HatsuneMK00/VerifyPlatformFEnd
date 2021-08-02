@@ -16,55 +16,41 @@
         </el-select>
       </el-form-item>
       <el-form-item label="网络模型：">
-        <!--        <el-input type="text" v-model="ParaPack.para1" clearable></el-input>-->
-        <el-select v-model="ParaPacket.model" placeholder="请选择网络模型">
-          <el-option
-            label="cifar10_cnn_lenet_averpool_sigmoid_myself"
-            value="models/cifar10_cnn_lenet_averpool_sigmoid_myself.h5"
-          ></el-option>
-          <el-option
-            label="fashion_mnist_cnn_4layer_5_3_sigmoid_myself"
-            value="models/fashion_mnist_cnn_4layer_5_3_sigmoid_myself.h5"
-          ></el-option>
-          <el-option
-            label="fashion_mnist_cnn_6layer_5_3_sigmoid_myself"
-            value="models/fashion_mnist_cnn_6layer_5_3_sigmoid_myself.h5"
-          ></el-option>
-          <el-option
-            label="fashion_mnist_cnn_8layer_5_3_sigmoid_myself"
-            value="models/fashion_mnist_cnn_8layer_5_3_sigmoid_myself.h5"
-          ></el-option>
-          <el-option
-            label="fashion_mnist_cnn_10layer_5_3_sigmoid_myself"
-            value="models/fashion_mnist_cnn_10layer_5_3_sigmoid_myself.h5"
-          ></el-option>
-          <el-option
-            label="gtsrb_cnn_5layer_sigmoid_myself"
-            value="models/gtsrb_cnn_5layer_sigmoid_myself.h5"
-          ></el-option>
-        </el-select>
+        <el-upload
+          class="model-upload"
+          action="http://219.228.60.69:9090/winr/model"
+          name="modelFile"
+          :on-success="handleSuccessMod"
+          :on-preview="handlePreviewMod"
+          :on-remove="handleRemoveMod"
+          multiple
+          :limit="1"
+          :on-exceed="handleExceedMod"
+          :file-list="modelList"
+        >
+          <el-button size="small" type="primary">上传模型</el-button>
+          <template #tip>
+            <div class="el-upload__tip">只能上传1个H5文件</div>
+          </template>
+        </el-upload>
       </el-form-item>
       <el-form-item label="扰动值(Epsilon)：">
         <el-col :span="6">
           <el-input type="text" v-model="ParaPacket.epsilon" clearable></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item>
+      <el-form-item label="图片：">
         <el-upload
           class="pic-upload"
           action="http://219.228.60.69:9090/winr/images"
           name="images"
           :on-success="handleSuccessPic"
-          :on-remove="handleRemove"
-          :file-list="fileList"
+          :on-remove="handleRemovePic"
+          :on-preview="handlePreviewPic"
+          :file-list="picList"
           list-type="picture"
         >
           <el-button size="small" type="primary">上传图片</el-button>
-          <!--          <template #tip>-->
-          <!--            <div class="el-upload__tip">-->
-          <!--              只能上传 jpg/png 文件，且不超过 500kb-->
-          <!--            </div>-->
-          <!--          </template>-->
         </el-upload>
       </el-form-item>
       <el-form-item>
@@ -73,7 +59,7 @@
           style="width: 100%"
         >
           <el-table-column
-            prop="name"
+            prop="name_user"
             label="图片名"
             width="180"
           >
@@ -81,15 +67,11 @@
           <el-table-column
             prop="tag"
             label="标签"
+            width="180"
           >
           </el-table-column>
         </el-table>
       </el-form-item>
-      <!--      <el-form-item label="图片数量：">-->
-      <!--        <el-col :span="6">-->
-      <!--          <el-input type="text" v-model="ParaPacket.imageNum" clearable></el-input>-->
-      <!--        </el-col>-->
-      <!--      </el-form-item>-->
     </el-form>
     <div align="center">
       <el-button type="primary" round @click="submit_para">下一步</el-button>
@@ -104,10 +86,10 @@ export default {
   data() {
     return {
       picPostURL: this.$axios.baseURL + '/winr/images',
-      fileList: [],
-      // the map of the user picture name to the server picture name
-      // the key is user pic name, the value is serve pic name
-      picNameMap: '0',
+      picList: [],
+      modelList: [],
+      // the table of the user model name and the server model name
+      modelNameTable: '0',
       // the table of the user picture name and the tag
       picNameTagTableData: [],
       ParaPacket: {
@@ -115,8 +97,7 @@ export default {
         model: '',
         epsilon: '',
         dataset: '',
-        // imageNum: '',
-        testImageInfo: '0'
+        testImageInfoJson: ''
       }
     }
   },
@@ -125,58 +106,43 @@ export default {
       return this.$axios.baseURL + '/winr/images'
     },
     handleSuccessPic(response, file, fileList) {
-      if (this.ParaPacket.testImageInfo === '0') {
-        this.ParaPacket.testImageInfo = new Map()
-      }
-      if (this.picNameMap === '0') {
-        this.picNameMap = new Map()
-      }
       console.log('handleSuccessPic')
       console.log(response)
       console.log(file)
+      var resMsg = '成功。'
       if (response.status === -410) {
-        this.$alert('图片上传失败！服务器没有收到。', '提示', {
-          confirmButtonText: '确定',
-          callback: (action) => {
-          }
-        })
+        resMsg = '失败！服务器没有收到。'
       } else if (response.status === -510) {
-        this.$alert('图片上传失败！图片全部保存失败。', '提示', {
-          confirmButtonText: '确定',
-          callback: (action) => {
-          }
-        })
-      } else if (response.status === 200) {
-        this.$alert('图片上传成功！（' + response.data.successSave + '/' + response.data.imageUpload + '）', '提示', {
-          confirmButtonText: '确定',
-          callback: (action) => {
-          }
-        })
-        // set tag in parameter
-        var tagPic = prompt('请输入图片' + fileList[fileList.length - 1].name + '的标签')
-        this.ParaPacket.testImageInfo.set(response.data.imageNames[0], tagPic)
-        // store name map
-        this.picNameMap.set(fileList[fileList.length - 1].name, response.data.imageNames[0])
-        // insert into picNameTag
-        this.$set(
-          this.picNameTagTableData,
-          this.picNameTagTableData.length,
-          { name: fileList[fileList.length - 1].name, tag: tagPic }
-        )
-        console.log(this.picNameTagTableData)
-      } else {
-        this.$alert('图片上传失败！未知原因。', '提示', {
-          confirmButtonText: '确定',
-          callback: (action) => {
-          }
-        })
+        resMsg = '失败！图片全部保存失败。'
+      } else if (response.status !== 200) {
+        resMsg = '失败！未知原因。'
       }
+      this.$alert('图片上传' + resMsg, '提示', {
+        confirmButtonText: '确定',
+        callback: (action) => {
+        }
+      })
+      if (response.status !== 200) return
+      this.$alert('图片上传成功！（' + response.data.successSave + '/' + response.data.imageUpload + '）', '提示', {
+        confirmButtonText: '确定',
+        callback: (action) => {
+        }
+      })
+      // get tag of picture
+      var tagPic = prompt('请输入图片' + fileList[fileList.length - 1].name + '的标签')
+      // insert into picNameTag
+      this.$set(
+        this.picNameTagTableData,
+        this.picNameTagTableData.length,
+        { name_user: fileList[fileList.length - 1].name, tag: tagPic, name_server: response.data.imageNames[0] }
+      )
       console.log(fileList)
+      console.log(this.picNameTagTableData)
       console.log(this.ParaPacket)
       console.log('handleSuccessPic end')
     },
-    handleRemove(file, fileList) {
-      console.log('handleRemove')
+    handleRemovePic(file, fileList) {
+      console.log('handleRemovePic')
       console.log(file)
       // delete in fileList
       for (var i = 0; i < fileList.length; i++) {
@@ -185,30 +151,85 @@ export default {
           break
         }
       }
-      // delete in ParaPacket
-      var serPicName = this.picNameMap.get(file.name)
-      if (this.ParaPacket.testImageInfo.has(serPicName)) {
-        this.ParaPacket.testImageInfo.delete(serPicName)
-      }
       // delete in picNameTag
       this.picNameTagTableData.splice(file.name, 1)
       console.log(fileList)
       console.log(this.ParaPacket)
-      console.log('handleRemove end')
+      console.log('handleRemovePic end')
     },
-    handlePreview(file) {
+    handlePreviewPic(file) {
       // :on-preview="handlePreview"
-      console.log('handlePreview')
+      console.log('handlePreviewPic')
       console.log(file)
-      console.log('handlePreview end')
+      console.log('handlePreviewPic end')
+    },
+    handleSuccessMod(response, file, fileList) {
+      console.log('handleSuccessMod')
+      console.log(response)
+      console.log(file)
+      var resMsg = '成功。'
+      if (response.status === 510) {
+        resMsg = '失败。服务器保存图片失败。'
+      } else if (response.status !== 200) {
+        resMsg = '失败。未知错误。'
+      }
+      this.$alert('模型上传' + resMsg, '提示', {
+        confirmButtonText: '确定',
+        callback: (action) => {
+        }
+      })
+      if (response.status !== 200) return
+      // insert into modelNameTable
+      // this.$set(
+      //   this.modelNameTable,
+      //   this.modelNameTable.length,
+      //   { name_user: fileList[fileList.length - 1].name, name_server: response.data.modelFilename }
+      // )
+      // put into ParaPacket
+      this.ParaPacket.model = response.data.modelFilename
+      console.log(this.modelNameTable)
+      console.log(this.ParaPacket)
+      console.log('handleSuccessMod end')
+    },
+    handleRemoveMod(file, fileList) {
+      console.log('handleRemoveMod')
+      console.log(file)
+      // delete in fileList
+      for (var i = 0; i < fileList.length; i++) {
+        if (file.name === fileList[i].name) {
+          fileList.splice(i, 1)
+          break
+        }
+      }
+      // delete in modelNameTable
+      // this.modelNameTable.splice(file.name, 1)
+      // change ParaPacket
+      this.ParaPacket.model = '0'
+      console.log(fileList)
+      console.log(this.ParaPacket)
+      console.log('handleRemoveMod end')
+    },
+    handlePreviewMod(file) {
+      // :on-preview="handlePreview"
+      console.log('handlePreviewMod')
+      console.log(file)
+      console.log('handlePreviewMod end')
+    },
+    handleExceedMod(files, fileList) {
+      console.log('handleExceedMod')
+      this.$alert('只能上传一个模型。', '提示', {
+        confirmButtonText: '确定',
+        callback: (action) => {
+        }
+      })
+      console.log('handleExceedMod end')
     },
     async submit_para() {
       // get verify_id and put into ParaPacket
       await this.get_vid()
       // post parameter, if success, will jump to next page
+      // else, will jump to index page
       this.post_para()
-      // jump to /winr/index
-      this.to_index()
     },
     next_step() {
       this.$router.replace({ path: '/WiNR/step2' })
@@ -228,39 +249,49 @@ export default {
         })
     },
     async post_para() {
+      // generate testImageInfoJson
+      this.ParaPacket.testImageInfoJson = '{'
+      for (var i = 0; i < this.picNameTagTableData.length; i++) {
+        this.ParaPacket.testImageInfoJson += '"' + this.picNameTagTableData[i].name_server + '": "' + this.picNameTagTableData[i].tag + '"'
+        if (i !== this.picNameTagTableData.length - 1) {
+          this.ParaPacket.testImageInfoJson += ', '
+        } else {
+          this.ParaPacket.testImageInfoJson += '}'
+        }
+      }
+      console.log('post para')
+      console.log(this.ParaPacket)
+      var isSuccess = false
       // post parameter
       await this.$axios
         .post('/verify/winr/' + this.$store.getters.userId, this.ParaPacket)
         .then((res) => {
-          // console.log(res)
+          console.log(res)
           if (res.data.status === 200) {
+            isSuccess = true
             this.$alert('验证提交成功。验证编号为：' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
               callback: (action) => {
               }
             })
-            // submit success, to next page
-            this.next_step()
-          } else if (res.data.status === -100) {
-            this.$alert('验证提交失败！Websocket未建立。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
-              confirmButtonText: '确定',
-              callback: (action) => {
-              }
-            })
-          } else if (res.data.status === -400) {
-            this.$alert('验证提交失败！参数错误。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
-              confirmButtonText: '确定',
-              callback: (action) => {
-              }
-            })
-          } else if (res.data.status === 410) {
-            this.$alert('验证提交失败！缺少VID。将返回工具首页。' + this.ParaPacket.verifyId, '提示', {
-              confirmButtonText: '确定',
-              callback: (action) => {
-              }
-            })
           } else {
-            this.$alert('验证提交失败！未知原因。将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
+            var resMsg = '0'
+            if (res.data.status === -100) {
+              resMsg = 'Websocket未建立。'
+            } else if (res.data.status === -400) {
+              resMsg = '参数错误。'
+            } else if (res.data.status === 410) {
+              resMsg = '缺少VID。'
+            } else if (res.data.status === 420) {
+              resMsg = '无法向工具传递验证参数。'
+            } else if (res.data.status === 430) {
+              resMsg = '参数错误。'
+            } else if (res.data.status === 440) {
+              resMsg = '模型或图片不存在，请先上传。'
+            } else {
+              resMsg = '未知原因。'
+            }
+            this.$alert('验证提交失败！' + resMsg + '将返回工具首页。验证编号为：' + this.ParaPacket.verifyId, '提示', {
               confirmButtonText: '确定',
               callback: (action) => {
               }
@@ -270,6 +301,11 @@ export default {
         .catch(function(error) {
           console.log(error)
         })
+      if (isSuccess) {
+        this.next_step()
+      } else {
+        this.to_index()
+      }
     }
   }
 }

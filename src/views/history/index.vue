@@ -11,16 +11,13 @@
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
             <div v-if="props.row.netName != null">
-              <el-form-item label="网络名称"><span>{{ props.row.netName }}</span></el-form-item>
+              <el-form-item label="网络模型"><span>{{ props.row.netName }}</span></el-form-item>
             </div>
             <div v-if="props.row.dataset != null">
               <el-form-item label="数据集"><span>{{ props.row.dataset }}</span></el-form-item>
             </div>
             <div v-if="props.row.epsilon != null">
               <el-form-item label="扰动值epsilon"><span>{{ props.row.epsilon }}</span></el-form-item>
-            </div>
-            <div v-if="props.row.dataset != null">
-              <el-form-item label="图片数量"><span>{{ props.row.numOfImage }}</span></el-form-item>
             </div>
             <div v-if="props.row.norm != null">
               <el-form-item label="范式"><span>{{ props.row.norm }}</span></el-form-item>
@@ -97,10 +94,9 @@ export default {
           path: '/WiNR/Step3',
           query: { verifyId: row.verifyId }
         })
-      }
-      if (row.tool === 'DeepCert') {
+      } else if (row.tool === 'DeepCert') {
         this.$router.replace({
-          path: '/', // should go to the result page of DeepCert
+          path: '/DeepCert/show',
           query: { verifyId: row.verifyId }
         })
       }
