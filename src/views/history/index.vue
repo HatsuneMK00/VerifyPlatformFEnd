@@ -11,16 +11,13 @@
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
             <div v-if="props.row.netName != null">
-              <el-form-item label="网络名称"><span>{{ props.row.netName }}</span></el-form-item>
+              <el-form-item label="网络模型"><span>{{ props.row.netName }}</span></el-form-item>
             </div>
             <div v-if="props.row.dataset != null">
               <el-form-item label="数据集"><span>{{ props.row.dataset }}</span></el-form-item>
             </div>
             <div v-if="props.row.epsilon != null">
               <el-form-item label="扰动值epsilon"><span>{{ props.row.epsilon }}</span></el-form-item>
-            </div>
-            <div v-if="props.row.dataset != null">
-              <el-form-item label="图片数量"><span>{{ props.row.numOfImage }}</span></el-form-item>
             </div>
             <div v-if="props.row.norm != null">
               <el-form-item label="范式"><span>{{ props.row.norm }}</span></el-form-item>
@@ -34,17 +31,17 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="验证ID" prop="verifyId" />
-      <el-table-column label="验证工具" prop="tool" />
-      <el-table-column label="开始时间" prop="startTime" />
-      <el-table-column label="当前状态" prop="status" />
+      <el-table-column label="验证ID" prop="verifyId"></el-table-column>
+      <el-table-column label="验证工具" prop="tool"></el-table-column>
+      <el-table-column label="开始时间" prop="startTime"></el-table-column>
+      <el-table-column label="当前状态" prop="status"></el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
         width="100"
       >
         <template #default="scope">
-          <el-button type="text" size="small" @click="checkResult(scope.row)">查看结果</el-button>
+          <el-button @click="checkResult(scope.row)" type="text" size="small">查看结果</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -58,9 +55,6 @@ export default {
     return {
       recordTableData: []
     }
-  },
-  mounted: function() {
-    this.GetRecord()
   },
   methods: {
     GetRecord() {
@@ -87,12 +81,20 @@ export default {
         })
     },
     checkResult(row) {
+      if (row.status === '运行中') {
+        this.$alert('验证正在运行，不能查看结果。请稍等并刷新页面重试。', '提示', {
+          confirmButtonText: '确定',
+          callback: (action) => {
+          }
+        })
+        return
+      }
       if (row.tool === 'WiNR') {
         this.$router.replace({
           path: '/WiNR/Step3',
           query: { verifyId: row.verifyId }
         })
-      } else {
+      } else if (row.tool === 'DeepCert') {
         this.$router.replace({
           path: '/DeepCert/show',
           query: { verifyId: row.verifyId }
@@ -112,6 +114,9 @@ export default {
       }
       return re
     }
+  },
+  mounted: function() {
+    this.GetRecord()
   }
 }
 </script>
