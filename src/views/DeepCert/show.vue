@@ -1,40 +1,22 @@
 <template>
-  <div class="box1">
-    <div class="box2">
-      <div class="img_box">
-        <img src="@/assets/logo.png" alt="wu">
+  <div class="box2">
+    <div class="img_box">
+      <img src="@/assets/logo.png" alt="wu">
+    </div>
+    <div class="table">模型使用的是：{{ model_name }}</div>
+    <div class="box1">
+      <div class="demo-image">
+        <div v-for="obj in objs" :key="obj" class="block">
+          <div class="robust_class">最小扰动半径：{{ obj.robust }}</div>
+          <div class="label_class">标签：{{ obj.lable }}</div>
+          <el-image
+            style="width: 200px; height: 200px"
+            :src="obj.url1"
+            fit="fill"
+            onerror="javascript:this.src='@/assets/error.png'"
+          />
+        </div>
       </div>
-      <el-table
-        :data="tableData"
-        stripe
-        style="width: 100%"
-      >
-        <el-table-column
-          prop="model_name"
-          label="model_name"
-          width="200"
-        />
-        <el-table-column
-          prop="num_image"
-          label="num_image"
-          width="200"
-        />
-        <el-table-column
-          prop="target_type"
-          label="target_type"
-          width="200"
-        />
-        <el-table-column
-          prop="avg_robustness"
-          label="avg_robustness"
-          width="200"
-        />
-        <el-table-column
-          prop="avg_run_time"
-          label="avg_run_time"
-          width="200"
-        />
-      </el-table>
     </div>
   </div>
 </template>
@@ -45,14 +27,9 @@ export default {
   name: 'Show',
   data() {
     return {
+      model_name: '',
       verifyId: '',
-      tableData: [{
-        model_name: '',
-        num_image: '',
-        target_type: '',
-        avg_robustness: '',
-        avg_run_time: ''
-      }]
+      objs: []
     }
   },
   mounted() {
@@ -61,17 +38,32 @@ export default {
   methods: {
     getDatefrom() {
       this.verifyId = this.$route.query.verifyId
+      // this.verifyId = 'asdfqeruhasdfjh1387123'
       const params = new URLSearchParams()
       params.append('verifyId', this.verifyId)
       const verifyDeepCert = (params) =>
         get(`/verify/verification`, params)
       verifyDeepCert(params).then(res => {
         console.log(res)
-        this.tableData[0].model_name = res.data.result.model_name
-        this.tableData[0].avg_run_time = res.data.result.avg_run_time
-        this.tableData[0].avg_robustness = res.data.result.avg_robustness
-        this.tableData[0].num_image = res.data.result.numimage
-        this.tableData[0].target_type = res.data.result.targettype
+        if (res.status === 200) {
+          for (var temp in res.data.result) {
+            console.log(res.data.result[temp])
+            var tempUrl = 'http://219.228.60.69:9090/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
+            var tempLable = res.data.result[temp].true_label
+            var temRobust = res.data.result[temp].robustness
+            var tempModel = res.data.result[temp].model
+            this.model_name = tempModel.slice(7)
+            console.log(this.model_name)
+            this.objs.push({
+              robust: temRobust,
+              lable: tempLable,
+              url1: tempUrl
+            })
+            console.log(this.objs[temp])
+          }
+        } else {
+          alert(res.data.verificationStatus)
+        }
       })
     }
   }
@@ -80,19 +72,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.box1 {
-  background-color: aquamarine;
-  height: 100%;
-}
 .box2 {
-  width: 1000px;
-  height: 300px;
+  width: 100%;
+  height: 30%;
   border-radius: 3px;
-  background-color: aliceblue;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
+  position: center;
   .img_box {
     height: 130px;
     width: 130px;
@@ -101,7 +85,7 @@ export default {
     border-radius: 50%;
     padding: 10px;
     left: 50%;
-    transform: translate(-50%,-150%);
+    transform: translate(-50%);
     box-shadow: 0 0 10px aliceblue;
     background-color: aliceblue;
     img{
@@ -110,6 +94,27 @@ export default {
       background-color: aliceblue;
       border-radius: 50%;
     }
+  }
+  .table{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%,800%);
+  }
+}
+.box1{
+  width: 100%;
+  height: 70%;
+  position: absolute;
+  transform: translate(0,50%);
+  .block{
+    width: 200px;
+    height: 100px;
+    display: inline-block;
+    padding: 10px;
+    margin: 10px;
+  }
+  .demo-image{
+    position: center;
   }
 }
 
