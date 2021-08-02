@@ -6,23 +6,60 @@
       <el-step title="开始验证" />
       <el-step title="查看结果" />
     </el-steps>
+    <el-table
+      :data="tableData"
+      cell-style="font-size: 16px"
+      header-cell-style="font-size: 16px"
+      style="width: 60%; margin: 30px auto 30px auto">
+      <el-table-column
+        prop="tool"
+        label="工具"
+        width="100"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="eps"
+        label="扰动半径"
+        width="100"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="dataset"
+        label="数据集"
+        width="150"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="netName"
+        label="网络参数"
+        align="center">
+      </el-table-column>
+    </el-table>
     <el-row v-for="image in images" :key="image.imageId" class="row" type="flex" justify="center">
       <el-col :span="8">
         <el-card align="middle" :body-style="{ padding: '20px' }">
+          <div class="description">
+            <span class="title">原始图片</span>
+          </div>
           <div>
             <img :src="image.originImages" class="image">
           </div>
           <div class="description">
-            <span>original</span>
-          </div>
-          <div class="description">
-            <span>label: {{ image.originLabel }}</span>
+            <span>标签: {{ image.originLabel }}</span>
           </div>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card align="middle" :body-style="{ padding: '20px' }">
-          <div class="img_box" v-if="image.robust === 'True'">
+          <div v-if="image.unrobust === 'True'" class="description">
+            <span class="title">扰动半径为</span>
+            <span style="font-size: 20px; font-weight: 500"> {{ image.eps }} </span>
+            <span class="title">的对抗样本</span>
+          </div>
+          <div v-else class="description">
+            <span class="title">无对抗样本</span>
+          </div>
+          <div v-if="image.robust === 'True'" class="img_box">
             <img src="@/assets/logo.png" class="logo_img">
           </div>
           <div v-else-if="image.misclassified === 'True'" class="img_box">
@@ -31,21 +68,14 @@
           <div v-else>
             <img :src="image.advExamples" class="image">
           </div>
-          <div v-if="image.unrobust === 'True'" class="description">
-            <span v-html="'adversarial&nbsp;&nbsp;&nbsp;&nbsp;'"></span>
-            <span>eps: {{ image.eps }}</span>
-          </div>
-          <div v-else class="description">
-            <span>no adversarial</span>
-          </div>
           <div v-if="image.robust === 'True'" class="description">
-            <span>This image is robust</span>
+            <span>此图片已为鲁棒的</span>
           </div>
           <div v-else-if="image.misclassified === 'True'" class="description">
-            <span>This image is misclassified</span>
+            <span>此图片神经网络未正确分类，不进行鲁棒性验证</span>
           </div>
           <div v-else class="description">
-            <span style="white-space: pre">label: {{ image.advLabel }}</span>
+            <span>标签: {{ image.advLabel }}</span>
           </div>
         </el-card>
       </el-col>
@@ -76,6 +106,11 @@
   width: 150px;
   height: 150px
 }
+.title {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 3px;
+}
 </style>
 
 <script>
@@ -85,77 +120,13 @@ export default {
   data() {
     return {
       verifyId: '',
-      labels: {
-        fashion: {
-          0: 'T-shirt',
-          1: 'Trouser',
-          2: 'Pullover',
-          3: 'Dress',
-          4: 'Coat',
-          5: 'Sandal',
-          6: 'Shirt',
-          7: 'Sneaker',
-          8: 'Bag',
-          9: 'Ankle boot'
-        },
-        cifar10: {
-          0: 'Airplane',
-          1: 'Automobile',
-          2: 'Bird',
-          3: 'Cat',
-          4: 'Deer',
-          5: 'Dog',
-          6: 'Frog',
-          7: 'Horse',
-          8: 'Ship',
-          9: 'Truck'
-        },
-        gtsrb: {
-          0: 'Speed limit (20km/h)',
-          1: 'Speed limit (30km/h)',
-          2: 'Speed limit (50km/h)',
-          3: 'Speed limit (60km/h)',
-          4: 'Speed limit (70km/h)',
-          5: 'Speed limit (80km/h)',
-          6: 'End of speed limit (80km/h)',
-          7: 'Speed limit (100km/h)',
-          8: 'Speed limit (120km/h)',
-          9: 'No passing',
-          10: 'No passing for vehicles over 3.5 metric tons',
-          11: 'Right-of-way at the next intersection',
-          12: 'Priority road',
-          13: 'Yield',
-          14: 'Stop',
-          15: 'No vehicles',
-          16: 'Vehicles over 3.5 metric tons prohibited',
-          17: 'No entry',
-          18: 'General caution',
-          19: 'Dangerous curve to the left',
-          20: 'Dangerous curve to the right',
-          21: 'Double curve',
-          22: 'Bumpy road',
-          23: 'Slippery road',
-          24: 'Road narrows on the right',
-          25: 'Road work',
-          26: 'Traffic signals',
-          27: 'Pedestrians',
-          28: 'Children crossing',
-          29: 'Bicycles crossing',
-          30: 'Beware of ice/snow',
-          31: 'Wild animals crossing',
-          32: 'End of all speed and passing limits',
-          33: 'Turn right ahead',
-          34: 'Turn left ahead',
-          35: 'Ahead only',
-          36: 'Go straight or right',
-          37: 'Go straight or left',
-          38: 'Keep right',
-          39: 'Keep left',
-          40: 'Roundabout mandatory',
-          41: 'End of no passing',
-          42: 'End of no passing by vehicles over 3.5 metric tons'
-        }
-      },
+      tableData: [{
+        tool: 'WiNR',
+        eps: '',
+        dataset: '',
+        netName: ''
+      }],
+      labels: {},
       images: []
     }
   },
@@ -164,6 +135,10 @@ export default {
     // this.verifyId = 'uwery134r132'
     verification(this.verifyId).then((res) => {
       if (res.status === 200) {
+        this.labels = require('./labels').Labels.labels
+        this.tableData[0].eps = res.data.verificationDetail.epsilon
+        this.tableData[0].dataset = res.data.verificationDetail.dataset
+        this.tableData[0].netName = res.data.verificationDetail.netName.split('.')[0]
         var flag = 0
         var imageKey = ''
         var tempUrl = []
