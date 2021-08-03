@@ -9,86 +9,107 @@
         开发者：华东师范大学 吴旖婷
       </div>
 
-      <div style="text-align:center;padding:30px" >
+      <div style="text-align: center; padding: 30px">
         <transition name="el-zoom-in-center">
-          <el-button round @click="show" v-show="!isDisplay">开始使用DeepCert！</el-button>
+          <el-button round @click="show" v-show="!isDisplay"
+            >开始使用DeepCert！</el-button
+          >
         </transition>
       </div>
 
       <transition name="el-fade-in">
         <div class="main" v-show="isDisplay">
-          <el-form :model="ruleForm" ref="ruleFrom">
-            <el-form-item prop="core" label="请选择是否启用Core">
-              <el-radio v-model="ruleForm.core" label="True">True</el-radio>
-              <el-radio v-model="ruleForm.core" label="False">False</el-radio>
-            </el-form-item>
-            <el-form-item
-              prop="netName"
-              label="请选择模型"
-              v-if="ruleForm.core === 'False'"
+          <div style="padding: 0cm 10cm">
+            <el-form
+              :model="ruleForm"
+              ref="ruleFrom"
+              class="register-container"
             >
-              <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
-                <el-option
-                  v-for="item in options1"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value"
+              <el-form-item label="上传图片：">
+                <el-upload
+                  ref="upload1"
+                  multiple
+                  name="images"
+                  action=""
+                  accept=".png, .jpg, .jpeg"
+                  :http-request="httpRequest1"
+                  list-type="picture"
+                  class="pic-upload"
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item
-              prop="netName"
-              label="请选择模型"
-              v-else-if="ruleForm.core === 'True'"
-            >
-              <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
-                <el-option
-                  v-for="item in options2"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value"
+                  <el-button type="primary">点击上传图片</el-button>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传jpg/png文件
+                  </div>
+                </el-upload>
+                <el-button @click="newForm" style="top: 10px"
+                  >点击将以上图片上传至后台</el-button
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item prop="netName" label="请选择模型" v-else>
-              <el-select v-model="ruleForm.netName" placeholder="请先选择core">
-              </el-select>
-            </el-form-item>
-            <el-form-item prop="numOfImage" label="请选择图片数量">
-              <el-input
-                v-model="ruleForm.numOfImage"
-                placeholder="请输入图片数量"
-              ></el-input>
-            </el-form-item>
-            <el-form-item prop="norm" label="请选择范数">
-              <el-radio v-model="ruleForm.norm" label="1">1</el-radio>
-              <el-radio v-model="ruleForm.norm" label="2">2</el-radio>
-              <el-radio v-model="ruleForm.norm" label="i">i</el-radio>
-            </el-form-item>
-            <el-form-item prop="activation" label="请选择activation">
-              <el-radio v-model="ruleForm.activation" label="sigmoid">sigmoid</el-radio>
-              <el-radio v-model="ruleForm.activation" label="tanh">tanh</el-radio>
-              <el-radio v-model="ruleForm.activation" label="atan">atan</el-radio>
-            </el-form-item>
-            <el-form-item prop="isCifar" label="请选择是否启用cifar">
-              <el-radio v-model="ruleForm.isCifar" label="True">True</el-radio>
-              <el-radio v-model="ruleForm.isCifar" label="False">False</el-radio>
-            </el-form-item>
-          </el-form>
-          <span slot="footer">
-          <el-button @click="verify">开始计算鲁棒半径</el-button>
-        </span>
+              </el-form-item>
+
+              <el-form-item label="上传模型文件:">
+                <el-upload
+                  ref="upload2"
+                  name="modelFile"
+                  action="deepcert/model"
+                  :http-request="httpRequest2"
+                >
+                  <el-button size="small" type="primary"
+                    >点击上传模型文件</el-button
+                  >
+                  <div slot="tip" class="el-upload__tip">
+                    备注：目前只支持使用sigmoid激活函数的模型
+                  </div>
+                </el-upload>
+              </el-form-item>
+
+              <el-form-item prop="norm" label="请选择范数">
+                <el-radio v-model="ruleForm.norm" label="1">L1范数</el-radio>
+                <el-radio v-model="ruleForm.norm" label="2">L2范数</el-radio>
+                <el-radio v-model="ruleForm.norm" label="i">无穷范数</el-radio>
+              </el-form-item>
+            </el-form>
+
+              <el-table :data="picTable" style="width: 100%">
+                <el-table-column prop="name" label="图片名" width="180">
+                </el-table-column>
+                <el-table-column prop="tag" label="标签" width="180">
+                </el-table-column>
+              </el-table>
+
+            <span slot="footer">
+              <el-button @click="verify">开始计算鲁棒半径</el-button>
+            </span>
+          </div>
         </div>
       </transition>
     </div>
 
     <el-dialog :visible.sync="waitingVisible" width="400px" center>
-      <div v-loading="loading" element-loading-text="拼命计算中" style="height:100px"></div>
-      <div style="height:65px;text-align:center;padding:20px">正在计算，请耐心等待</div>
-      <div style="text-align:center">
+      <div
+        v-loading="loading"
+        element-loading-text="拼命计算中"
+        style="height: 100px"
+      ></div>
+      <div style="height: 65px; text-align: center; padding: 20px">
+        正在计算，请耐心等待
+      </div>
+      <div style="text-align: center">
         <el-button @click="back">后台运行</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="isDisplayLog"
+      width="400px"
+      center
+      :close-on-click-modal="false"
+    >
+      <div style="height: 65px; text-align: center; padding: 20px">
+        请输入图片标签
+      </div>
+      <el-input v-model="info" placeholder="请输入图片标签"></el-input>
+      <div style="text-align: center; position: relative; top: 20px">
+        <el-button @click="uploadImageInfo">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -100,111 +121,28 @@ import { get, post } from "./indexByQzt";
 export default {
   data() {
     return {
-      isDisplay:false,
-      loading:false,
-      waitingVisible:false,
+      isDisplay: false,
+      isDisplayLog: false,
+      loading: false,
+      waitingVisible: false,
+      file: [],
+      modelFile: "",
+      initalName:"",
+      imageName: [],
+      info: "",
+      infos: [],
+      str: "{",
+      picTable: [],
       ruleForm: {
         verifyId: "",
         netName: "",
-        numOfImage: "",
         norm: "",
-        core: "",
-        activation: "",
-        isCifar: "",
-        isTinyImageNet: "False",
-      },
-      options1: [
-        {
-          value: "models/mnist_cnn_7layer_atan",
-        },
-        {
-          value: "models/mnist_cnn_7layer_tanh",
-        },
-        {
-          value: "models/mnist_cnn_7layer_sigmoid",
-        },
-        {
-          value: "models/mnist_cnn_lenet_atan",
-        },
-        {
-          value: "models/mnist_cnn_lenet_tanh",
-        },
-        {
-          value: "models/mnist_cnn_lenet_sigmoid",
-        },
-        {
-          value: "models/mnist_resnet_3_atan",
-        },
-        {
-          value: "models/mnist_resnet_3_tanh",
-        },
-        {
-          value: "models/mnist_resnet_3_sigmoid",
-        },
-        {
-          value: "models/mnist_resnet_4_atan",
-        },
-        {
-          value: "models/mnist_resnet_4_tanh",
-        },
-        {
-          value: "models/mnist_resnet_4_sigmoid",
-        },
-        {
-          value: "models/mnist_resnet_5_atan",
-        },
-        {
-          value: "models/mnist_resnet_5_tanh",
-        },
-        {
-          value: "models/mnist_resnet_5_sigmoid ",
-        },
-        {
-          value: "models/cifar_cnn_7layer_atan",
-        },
-        {
-          value: "models/cifar_cnn_7layer_tanh",
-        },
-        {
-          value: "models/cifar_cnn_7layer_sigmoid",
-        },
-      ],
-      options2: [
-        {
-          value: "models/mnist_cnn_4layer_5_3_atan",
-        },
-        {
-          value: "models/mnist_cnn_4layer_5_3_tanh",
-        },
-        {
-          value: "models/mnist_cnn_4layer_5_3_sigmoid",
-        },
-        {
-          value: "models/mnist_cnn_8layer_5_3_atan",
-        },
-        {
-          value: "models/mnist_cnn_8layer_5_3_tanh",
-        },
-        {
-          value: "models/mnist_cnn_8layer_5_3_sigmoid",
-        },
-        {
-          value: "models/cifar_cnn_7layer_5_3_atan",
-        },
-        {
-          value: "models/cifar_cnn_7layer_5_3_tanh",
-        },
-        {
-          value: "models/cifar_cnn_7layer_5_3_sigmoid",
-        },
-      ],
-      data: {
-        imageUrl: "",
+        testImageInfoJson: "",
       },
     };
   },
   methods: {
-    show(){
+    show() {
       this.isDisplay = true;
     },
     notify(title, type) {
@@ -213,52 +151,100 @@ export default {
         type: type,
       });
     },
+    httpRequest1(param) {
+      this.file.push(param.file);
+      // 一般情况下是在这里创建FormData对象，但我们需要上传多个文件，为避免发送多次请求，因此在这里只进行文件的获取，param可以拿到文件上传的所有信息
+      this.initalName = param.file.name;   
+      this.isDisplayLog = true;
+    },
+    newForm() {
+      let upData = new FormData();
+      // this.$refs.upload1.submit(); // 这里是执行文件上传的函数，其实也就是获取我们要上传的文件
+      this.file.forEach(function (file) {
+        // 因为要上传多个文件，所以需要遍历
+        upData.append("images", file);
+      });
+      post("/deepcert/images", upData).then((res) => {
+        if (res.status == 200) {
+          this.notify("图片上传成功", "success");
+          for (let i = 0; i < res.data.imageNames.length; i++) {
+            this.imageName.push(res.data.imageNames[i]);
+          }
+          console.log(this.imageName);
+        } else {
+          this.notify("图片上传失败", "error");
+        }
+      });
+    },
+    httpRequest2(param) {
+      this.modelFile = param.file;
+      let upData = new FormData();
+      upData.append("modelFile", this.modelFile);
+      // console.log(this.modelFile);
+      this.ruleForm.netName = this.modelFile.name;
+      post("/deepcert/model", upData).then((res) => {
+        if (res.status == 200) {
+          this.notify("模型上传成功", "success");
+        } else {
+          this.notify("模型上传失败", "error");
+        }
+      });
+    },
+    uploadImageInfo() {
+      this.infos.push(this.info);
+      this.$set(
+        this.picTable, 
+        this.picTable.length, {
+        name: this.initalName,
+        tag: this.info,
+      });
+      this.isDisplayLog = false;
+    },
     verify() {
       const getVerifyId = (params) => get(`/verify/verify_id`);
       getVerifyId().then((res) => {
         if (res.status == 200) {
-          this.notify("获取verifyId成功", "success");
           this.ruleForm.verifyId = res.data.verifyId;
-          console.log(this.ruleForm.verifyId)
+          this.notify("获取verifyId成功", "success");
+          console.log(this.ruleForm.verifyId);
+          for (let i = 0; i < this.infos.length; i++) {
+            this.str =
+              this.str + '"' + this.imageName[i] + '":"' + this.infos[i] + '"';
+            if (i != this.infos.length - 1) this.str = this.str + ",";
+          }
+          this.str = this.str + "}";
+          this.ruleForm.testImageInfoJson = this.str;
+          let params = new URLSearchParams();
+          params.append("verifyId", this.ruleForm.verifyId);
+          params.append("netName", this.ruleForm.netName);
+          console.log(this.ruleForm.netName);
+          params.append("norm", this.ruleForm.norm);
+          console.log(this.ruleForm.testImageInfoJson);
+          params.append("testImageInfoJson", this.ruleForm.testImageInfoJson);
+          const verifyDeepCert = (params) =>
+            post(`/verify/deepcert/${this.$store.getters.userId}`, params);
+          verifyDeepCert(params).then((res) => {
+            if (res.status == 200) {
+              this.notify("验证成功", "success");
+              this.loading = true;
+              this.waitingVisible = true;
+            } else if (res.status == -400) {
+              this.notify("参数有误", "error");
+            } else if (res.status == -100) {
+              this.notify("websocket未建立", "error");
+            } else {
+              this.notify("未知错误", "error");
+            }
+          });
         } else {
           this.notify("获取verifyId失败", "error");
         }
       });
-
-      let params = new URLSearchParams();
-      console.log(this.ruleForm.verifyId)
-      params.append("verifyId", this.ruleForm.verifyId);
-      params.append("netName", this.ruleForm.netName);
-      params.append("numOfImage", this.ruleForm.numOfImage);
-      params.append("norm", this.ruleForm.norm);
-      params.append("core", this.ruleForm.core);
-      params.append("activation", this.ruleForm.activation);
-      params.append("isCifar", this.ruleForm.isCifar);
-      params.append("isTinyImageNet", this.ruleForm.isTinyImageNet);
-      const verifyDeepCert = (params) =>
-        post(`/verify/deepcert/${this.$store.getters.userId}`, params);
-      verifyDeepCert(params)
-        .then((res) => {
-          if (res.status == 200) {
-            this.notify("验证成功", "success");
-            this.loading = true;
-            this.waitingVisible = true;
-          } else if(res.status == -400){
-            this.notify("参数有误", "error");
-          }
-          else if(res.status == -100){
-            this.notify("websocket未建立", "error");
-          }
-          else{
-            this.notify("未知错误", "error");
-
-          }
-        })
     },
-    back(){
+    back() {
       this.loading = false;
       this.waitingVisible = false;
-    }
+    },
   },
   computed: {
     onWebSocketMessage() {
@@ -270,6 +256,7 @@ export default {
     onWebSocketMessage: function(msg) {
       console.log(msg)
       var succ = msg.slice(7, 11)
+      console.log(succ)
       if (succ === 'succ') {
         var verifyId = msg.split(':')[1]
         if (verifyId == null) {
