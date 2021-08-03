@@ -18,11 +18,11 @@
       </div>
 
       <transition name="el-fade-in">
-        <div class="main" v-show="isDisplay">
+        <div v-show="isDisplay">
             <el-form
               :model="ruleForm"
               ref="ruleFrom"
-              class="register-container"
+              label-width="200px"
             >
 
               <el-form-item label="上传模型文件:">
@@ -50,17 +50,27 @@
                   accept=".png, .jpg, .jpeg"
                   :http-request="httpRequest1"
                   list-type="picture"
-                  class="pic-upload"
                 >
                   <el-button type="primary">点击上传图片</el-button>
                   <div slot="tip" class="el-upload__tip">
                     只能上传jpg/png文件
                   </div>
                 </el-upload>
-                <el-button @click="newForm" style="top: 10px"
+                <div style="padding:0.5cm 0 0 0">
+                <el-button type="primary" @click="newForm" style="top: 10px"
                   >点击将以上图片上传至后台</el-button
                 >
+                </div>
               </el-form-item>
+
+            <div style="padding:0 0 1cm 3cm">
+              <el-table :data="picTable" style="width: 100%">
+                <el-table-column prop="name" label="图片名" width="180">
+                </el-table-column>
+                <el-table-column prop="tag" label="标签" width="180">
+                </el-table-column>
+              </el-table>
+            </div>
 
               <el-form-item prop="norm" label="扰动半径度量标准">
                 <el-radio v-model="ruleForm.norm" label="1">L1范数</el-radio>
@@ -69,16 +79,9 @@
               </el-form-item>
             </el-form>
 
-              <el-table :data="picTable" style="width: 100%">
-                <el-table-column prop="name" label="图片名" width="180">
-                </el-table-column>
-                <el-table-column prop="tag" label="标签" width="180">
-                </el-table-column>
-              </el-table>
-
-            <span slot="footer">
-              <el-button @click="verify">开始计算鲁棒半径</el-button>
-            </span>
+            <div style="text-align:center">
+              <el-button type="primary" round @click="verify">开始计算鲁棒半径</el-button>
+            </div>
         </div>
       </transition>
     </div>
