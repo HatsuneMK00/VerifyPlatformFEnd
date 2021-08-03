@@ -63,7 +63,7 @@
                 </div>
               </el-form-item>
 
-            <div style="padding:0 0 1cm 3cm">
+            <div style="padding:0 0 1cm 5cm">
               <el-table :data="picTable" style="width: 100%">
                 <el-table-column prop="name" label="图片名" width="180">
                 </el-table-column>
@@ -201,6 +201,7 @@ export default {
         tag: this.info,
       });
       this.isDisplayLog = false;
+      this.info = "";
     },
     verify() {
       const getVerifyId = (params) => get(`/verify/verify_id`);
