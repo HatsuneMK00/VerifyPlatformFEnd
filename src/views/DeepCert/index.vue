@@ -19,12 +19,28 @@
 
       <transition name="el-fade-in">
         <div class="main" v-show="isDisplay">
-          <div style="padding: 0cm 10cm">
             <el-form
               :model="ruleForm"
               ref="ruleFrom"
               class="register-container"
             >
+
+              <el-form-item label="上传模型文件:">
+                <el-upload
+                  ref="upload2"
+                  name="modelFile"
+                  action="deepcert/model"
+                  :http-request="httpRequest2"
+                >
+                  <el-button size="small" type="primary"
+                    >点击上传模型文件</el-button
+                  >
+                  <div slot="tip" class="el-upload__tip">
+                    备注：目前只支持使用sigmoid激活函数的模型
+                  </div>
+                </el-upload>
+              </el-form-item>
+
               <el-form-item label="上传图片：">
                 <el-upload
                   ref="upload1"
@@ -46,23 +62,7 @@
                 >
               </el-form-item>
 
-              <el-form-item label="上传模型文件:">
-                <el-upload
-                  ref="upload2"
-                  name="modelFile"
-                  action="deepcert/model"
-                  :http-request="httpRequest2"
-                >
-                  <el-button size="small" type="primary"
-                    >点击上传模型文件</el-button
-                  >
-                  <div slot="tip" class="el-upload__tip">
-                    备注：目前只支持使用sigmoid激活函数的模型
-                  </div>
-                </el-upload>
-              </el-form-item>
-
-              <el-form-item prop="norm" label="请选择范数">
+              <el-form-item prop="norm" label="扰动半径度量标准">
                 <el-radio v-model="ruleForm.norm" label="1">L1范数</el-radio>
                 <el-radio v-model="ruleForm.norm" label="2">L2范数</el-radio>
                 <el-radio v-model="ruleForm.norm" label="i">无穷范数</el-radio>
@@ -79,7 +79,6 @@
             <span slot="footer">
               <el-button @click="verify">开始计算鲁棒半径</el-button>
             </span>
-          </div>
         </div>
       </transition>
     </div>
