@@ -1,29 +1,35 @@
 <template>
   <div>
-    <div class="table">验证工具：DeepCert</div>
+    <div class="table">验证工具 DeepCert</div>
     <el-table
       :data="tableData"
       class="list_table"
+      :header-cell-style="{'text-align':'center'}"
+      :cell-style="{'text-align':'center'}"
     >
       <el-table-column
         prop="model_name"
         label="模型"
         width="180"
+        class="td"
       />
       <el-table-column
         prop="number"
         label="验证图片数量"
         width="180"
+        class="td"
       />
     </el-table>
     <div class="pic">
-      <el-row v-for="obj in objs" :key="obj" type="flex" justify="center" class="row" :gutter="30">
+      <el-row v-for="obj in objs" :key="obj" type="flex" justify="center" :gutter="30">
         <el-col :span="12" class="el-col">
-          <el-card align="middle" :body-style="{ padding: '20px', margin: '0px'}">
+          <el-card align="middle" :body-style="{ padding: '20px', margin: '0px'}" class="el-card__body">
             <div>
               <div class="lable">测试样本{{ obj.id }}</div>
-              <div class="label_class">标签：{{ obj.lable }}</div>
-              <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" class="image">
+              <div class="inner clearfix">
+                <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" class="image">
+                <div class="label_class">标签：{{ obj.lable }}</div>
+              </div>
             </div>
             <div style="padding: 16px 0px 0px 0px;">
               <div class="robust_class">最小扰动半径：{{ obj.robust }}</div>
@@ -98,6 +104,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.clearfix {
+  *zoom: 1;
+}
+
+.clearfix::after,
+.clearfix::before {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
 .table {
   position: relative;
   text-align: center;
@@ -107,27 +125,51 @@ export default {
   width: 100%;
 }
 .list_table{
+  text-align: center;
   width: 360px;
   height: 100%;
-  position: absolute;
-  left: 39%;
+  margin: 0 auto;
 
 }
 .pic {
-  margin-top: 10%;
-  text-align:center;
+  margin: 5% auto;
+  overflow: hidden;
+
 }
-.row{
-  display: inline;
-  margin: 30px;
-  border-radius: 10px;
+.el-row{
+  float: left;
+  margin: 0 auto;
+  width: 50%;
 }
-.label_class .robust_class .label_class2{
-  font-size: 25px;
-  padding: 20px;
+.el-card{
+  width: 25%;
+
+}
+.el-card__body{
+  width: 400px;
+}
+.robust_class,.label_class2{
+  font-size: 20px;
+  padding: 10px;
 }
 .lable{
   font-size: 25px;
   padding: 20px;
+}
+.inner{
+  height: 100px;
+  width: 200px;
+  position: relative;
+}
+.inner .label_class{
+  position: absolute;
+  right: 20px;
+  top: 30px;
+}
+.inner .image{
+  position: absolute;
+  left: 0;
+  top: 10px;
+
 }
 </style>
