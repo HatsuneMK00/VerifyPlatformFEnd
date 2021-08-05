@@ -56,7 +56,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .title1 {
   position: relative;
   text-align: center;
@@ -70,14 +70,14 @@ export default {
   text-align: center;
   font-size: 24px;
   font-family: "微软雅黑";
-  padding: 24px;
+  padding: 20px;
   width: 100%;
 }
 
 .introduction {
   font-family: "微软雅黑";
   font-size: 15px;
-  line-height: 50px;
+  line-height: 25px;
   text-align: center;
 }
 
