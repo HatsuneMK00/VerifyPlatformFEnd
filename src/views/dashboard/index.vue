@@ -5,10 +5,21 @@
     <div class="subtitle1">华东师范大学 可信智能软件实验室</div>
     <div class="title2">简介</div>
     <div class="introduction">阿巴阿巴阿巴aaabbb</div>
-    <div class="title2">开发人员及联系方式</div>
-    <div align="center">
-      <img :src="groupPhoto" width="350px" height="260px">
+    <div class="title2">验证工具</div>
+    <div class="introduction">
+      目前我们的工具有验证神经网络是否满足鲁棒性的WiNR和快速计算给定神经网络鲁棒半径的DeepCert两款。
+      <br/><br/>
     </div>
+    <div align="center">
+      <el-row>
+        <el-button type="warning" plain @click="use_winr">WiNR</el-button>
+        <el-button type="warning" plain @click="use_deepcert">DeepCert</el-button>
+      </el-row>
+    </div>
+    <div class="title2">开发人员及联系方式</div>
+<!--    <div align="center">-->
+<!--      <img :src="groupPhoto" width="350px" height="260px">-->
+<!--    </div>-->
     <div class="introduction">邮箱：@@@@@</div>
   </div>
 </template>
@@ -39,6 +50,14 @@ export default {
     return {
       groupPhoto: require('@/assets/photo/group_photo01.jpg')
     }
+  },
+  methods: {
+    use_winr() {
+      this.$router.replace({ path: '/WiNR/index' })
+    },
+    use_deepcert() {
+      this.$router.replace({ path: '/DeepCert/index' })
+    }
   }
 }
 </script>
@@ -49,6 +68,7 @@ export default {
   font-size: 12px;
   line-height: 20px;
   text-align: right;
+  background: rgba(90, 110, 240, 0.4);
 }
 
 .title1 {
@@ -82,5 +102,13 @@ export default {
   font-size: 14px;
   line-height: 16px;
   text-align: center;
+  //background: rgba(55, 85, 239, 0.25);
+}
+.introduction2 {
+  font-family: "Times New Roman", "宋体";
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  //background: rgba(45, 57, 120, 0.2);
 }
 </style>
