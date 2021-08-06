@@ -8,7 +8,6 @@
     </el-steps>
     <el-form ref="ParaPack" :model="ParaPacket" class="register-container" label-width="200px">
       <el-form-item label="数据集：">
-        <!--        <el-input type="text" v-model="ParaPack.dataset" clearable></el-input>-->
         <el-select v-model="ParaPacket.dataset" placeholder="请选择数据集">
           <el-option label="cifar10" value="cifar10"></el-option>
           <el-option label="fashion_mnist" value="fashion_mnist"></el-option>
@@ -35,9 +34,7 @@
         </el-upload>
       </el-form-item>
       <el-form-item label="扰动值(Epsilon)：">
-        <el-col :span="6">
-          <el-input type="text" v-model="ParaPacket.epsilon" clearable></el-input>
-        </el-col>
+        <el-slider v-model="ParaPacket.epsilon" show-input :max="0.05" :step="0.005"></el-slider>
       </el-form-item>
       <el-form-item label="图片：">
         <el-upload
@@ -53,34 +50,59 @@
           <el-button size="small" type="primary">上传图片</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item>
-        <el-table
-          :data="picNameTagTableData"
-          style="width: 100%"
-        >
-          <el-table-column
-            prop="name_user"
-            label="图片名"
-            width="180"
-          >
-          </el-table-column>
-          <el-table-column
-            prop="tag"
-            label="标签"
-            width="180"
-          >
-          </el-table-column>
-        </el-table>
+      <el-form-item label="图片标签：">
+        <div v-if="ParaPacket.dataset==''">请先选择数据集</div>
+        <div v-else>
+          <el-form>
+            <el-form-item v-for="(picItem) in picNameTagTableData" :label="picItem.name_user">
+              <el-select v-model="picItem.tag" placeholder="请选择标签">
+                <div v-if="ParaPacket.dataset=='cifar10'">
+                  <el-option
+                    v-for="opt1 in cifar10LabelOpt"
+                    :label="opt1.label"
+                    :value="opt1.value"
+                  >
+                  </el-option>
+                </div>
+                <div v-else-if="ParaPacket.dataset=='fashion_mnist'">
+                  <el-option
+                    v-for="opt1 in fashion_mnistLabelOpt"
+                    :label="opt1.label"
+                    :value="opt1.value"
+                  >
+                  </el-option>
+                </div>
+                <div v-else-if="ParaPacket.dataset=='gtsrb'">
+                  <el-option
+                    v-for="opt1 in gtsrbLabelOpt"
+                    :label="opt1.label"
+                    :value="opt1.value"
+                  >
+                  </el-option>
+                </div>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </div>
       </el-form-item>
     </el-form>
     <div align="center">
-      <el-button type="primary" round @click="submit_para">下一步</el-button>
+      <el-button
+        type="primary"
+        round
+        @click="submit_para"
+        :disabled="this.ParaPacket.dataset == ''
+        || this.ParaPacket.model == ''
+        || this.picNameTagTableData.length == 0"
+      >
+        下一步
+      </el-button>
     </div>
   </div>
 </template>
 
 <script>
-
+import labelOpt from '@/store/modules/labels.js'
 export default {
   name: 'Step1',
   data() {
@@ -95,41 +117,39 @@ export default {
       ParaPacket: {
         verifyId: '',
         model: '',
-        epsilon: '',
+        epsilon: 0.01,
         dataset: '',
         testImageInfoJson: ''
-      }
+      },
+      cifar10LabelOpt: labelOpt.cifar10LabelOpt,
+      fashion_mnistLabelOpt: labelOpt.fashion_mnistLabelOpt,
+      gtsrbLabelOpt: labelOpt.gtsrbLabelOpt
     }
   },
   methods: {
-    GetUploadURL() {
-      return this.$axios.baseURL + '/winr/images'
-    },
     handleSuccessPic(response, file, fileList) {
       console.log('handleSuccessPic')
       console.log(response)
       console.log(file)
-      var resMsg = '成功。'
-      if (response.status === -410) {
-        resMsg = '失败！服务器没有收到。'
-      } else if (response.status === -510) {
-        resMsg = '失败！图片全部保存失败。'
-      } else if (response.status !== 200) {
-        resMsg = '失败！未知原因。'
+      if (response.status !== 200) {
+        var resMsg = '失败！'
+        if (response.status === -410) {
+          resMsg = '失败！服务器没有收到。'
+        } else if (response.status === -510) {
+          resMsg = '失败！图片全部保存失败。'
+        } else {
+          resMsg = '失败！未知原因。'
+        }
+        this.$alert('图片上传' + resMsg, '提示', {
+          confirmButtonText: '确定',
+          callback: (action) => {
+          }
+        })
+        return
       }
-      this.$alert('图片上传' + resMsg, '提示', {
-        confirmButtonText: '确定',
-        callback: (action) => {
-        }
-      })
-      if (response.status !== 200) return
-      this.$alert('图片上传成功！（' + response.data.successSave + '/' + response.data.imageUpload + '）', '提示', {
-        confirmButtonText: '确定',
-        callback: (action) => {
-        }
-      })
       // get tag of picture
-      var tagPic = prompt('请输入图片' + fileList[fileList.length - 1].name + '的标签')
+      // var tagPic = prompt('请输入图片' + fileList[fileList.length - 1].name + '的标签')
+      var tagPic = ''
       // insert into picNameTag
       this.$set(
         this.picNameTagTableData,
@@ -167,19 +187,21 @@ export default {
       console.log('handleSuccessMod')
       console.log(response)
       console.log(file)
-      var resMsg = '成功。'
-      if (response.status === 510) {
-        resMsg = '失败。服务器保存图片失败。'
-      } else if (response.status !== 200) {
-        resMsg = '失败。未知错误。'
-      }
-      this.$alert('模型上传' + resMsg, '提示', {
-        confirmButtonText: '确定',
-        callback: (action) => {
+      if (response.status !== 200) {
+        var resMsg = '失败。'
+        if (response.status === 510) {
+          resMsg = '失败。服务器保存图片失败。'
+        } else if (response.status !== 200) {
+          resMsg = '失败。未知错误。'
         }
-      })
-      if (response.status !== 200) return
-      // insert into modelNameTable
+        this.$alert('模型上传' + resMsg, '提示', {
+          confirmButtonText: '确定',
+          callback: (action) => {
+          }
+        })
+        return
+      }
+      // insert into modelNameTable, but same name
       // this.$set(
       //   this.modelNameTable,
       //   this.modelNameTable.length,
@@ -210,7 +232,7 @@ export default {
       console.log('handleRemoveMod end')
     },
     handlePreviewMod(file) {
-      // :on-preview="handlePreview"
+      // :on-preview="handlePreviewMod"
       console.log('handlePreviewMod')
       console.log(file)
       console.log('handlePreviewMod end')
@@ -223,6 +245,14 @@ export default {
         }
       })
       console.log('handleExceedMod end')
+    },
+    GetLabelOption() {
+      if (this.ParaPacket.dataset !== '') {
+        var re = 'opt1 in ' + this.ParaPacket.dataset + 'LabelOpt'
+        console.log(re)
+        return re
+      }
+      return ''
     },
     async submit_para() {
       // get verify_id and put into ParaPacket
@@ -307,6 +337,11 @@ export default {
         this.to_index()
       }
     }
+    // created: function() {
+    //   this.cifar10LabelOpt = require('./labels').cifar10LabelOpt
+    //   this.fashion_mnistLabelOpt = require('./labels').fashion_mnistLabelOpt
+    //   this.gtsrbLabelOpt = require('./labels').gtsrbLabelOpt
+    // }
   }
 }
 </script>
