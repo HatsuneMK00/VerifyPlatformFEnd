@@ -56,21 +56,25 @@
                     只能上传jpg/png文件
                   </div>
                 </el-upload>
-                <div style="padding:0.5cm 0 0 0">
-                <el-button type="primary" @click="newForm" style="top: 10px"
-                  >点击将以上图片上传至后台</el-button
-                >
-                </div>
               </el-form-item>
 
-            <div style="padding:0 0 1cm 5cm">
-              <el-table :data="picTable" style="width: 100%">
-                <el-table-column prop="name" label="图片名" width="180">
-                </el-table-column>
-                <el-table-column prop="tag" label="标签" width="180">
-                </el-table-column>
-              </el-table>
-            </div>
+              <el-form-item label="图片标签：">
+               <div>
+                 <el-form>
+                   <!-- eslint-disable -->
+                   <el-form-item v-for="(picItem) in picTable" :label="picItem.name">
+                     <el-select v-model="picItem.tag" placeholder="请选择标签">
+                         <el-option
+                           v-for="opt1 in numberPicLabelOpt"
+                           :label="opt1.label"
+                           :value="opt1.value"
+                         >
+                         </el-option>
+                     </el-select>
+                   </el-form-item>
+                 </el-form>
+               </div>
+              </el-form-item>
 
               <el-form-item prop="norm" label="扰动半径度量标准">
                 <el-radio v-model="ruleForm.norm" label="1">L1范数</el-radio>
@@ -100,31 +104,17 @@
       </div>
     </el-dialog>
 
-    <el-dialog
-      :visible.sync="isDisplayLog"
-      width="400px"
-      center
-      :close-on-click-modal="false"
-    >
-      <div style="height: 65px; text-align: center; padding: 20px">
-        请输入图片标签
-      </div>
-      <el-input v-model="info" placeholder="请输入图片标签"></el-input>
-      <div style="text-align: center; position: relative; top: 20px">
-        <el-button @click="uploadImageInfo">确定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
 import { get, post } from "./indexByQzt";
+import labelOpt from '@/store/modules/labels.js'
 export default {
   data() {
     return {
       isDisplay: false,
-      isDisplayLog: false,
       loading: false,
       waitingVisible: false,
       file: [],
@@ -141,6 +131,7 @@ export default {
         norm: "",
         testImageInfoJson: "",
       },
+      numberPicLabelOpt: labelOpt.numberPicLabelOpt
     };
   },
   methods: {
@@ -154,35 +145,30 @@ export default {
       });
     },
     httpRequest1(param) {
-      this.file.push(param.file);
-      // 一般情况下是在这里创建FormData对象，但我们需要上传多个文件，为避免发送多次请求，因此在这里只进行文件的获取，param可以拿到文件上传的所有信息
-      this.initalName = param.file.name;   
-      this.isDisplayLog = true;
-    },
-    newForm() {
-      let upData = new FormData();
-      // this.$refs.upload1.submit(); // 这里是执行文件上传的函数，其实也就是获取我们要上传的文件
-      this.file.forEach(function (file) {
-        // 因为要上传多个文件，所以需要遍历
-        upData.append("images", file);
+      this.initalName = param.file.name; 
+      this.$set(
+        this.picTable, 
+        this.picTable.length, {
+        name: this.initalName,
+        tag: "",
       });
+      let upData = new FormData();
+      upData.append("images", param.file);
       post("/deepcert/images", upData).then((res) => {
         if (res.status == 200) {
           this.notify("图片上传成功", "success");
           for (let i = 0; i < res.data.imageNames.length; i++) {
             this.imageName.push(res.data.imageNames[i]);
           }
-          console.log(this.imageName);
         } else {
           this.notify("图片上传失败", "error");
         }
-      });
+      });  
     },
     httpRequest2(param) {
       this.modelFile = param.file;
       let upData = new FormData();
       upData.append("modelFile", this.modelFile);
-      // console.log(this.modelFile);
       this.ruleForm.netName = this.modelFile.name;
       post("/deepcert/model", upData).then((res) => {
         if (res.status == 200) {
@@ -192,24 +178,15 @@ export default {
         }
       });
     },
-    uploadImageInfo() {
-      this.infos.push(this.info);
-      this.$set(
-        this.picTable, 
-        this.picTable.length, {
-        name: this.initalName,
-        tag: this.info,
-      });
-      this.isDisplayLog = false;
-      this.info = "";
-    },
     verify() {
       const getVerifyId = (params) => get(`/verify/verify_id`);
       getVerifyId().then((res) => {
         if (res.status == 200) {
           this.ruleForm.verifyId = res.data.verifyId;
           this.notify("获取verifyId成功", "success");
-          console.log(this.ruleForm.verifyId);
+           for (let j = 0; j < this.picTable.length; j++) {
+             this.infos.push(this.picTable[j].tag);
+           }
           for (let i = 0; i < this.infos.length; i++) {
             this.str =
               this.str + '"' + this.imageName[i] + '":"' + this.infos[i] + '"';
@@ -220,9 +197,7 @@ export default {
           let params = new URLSearchParams();
           params.append("verifyId", this.ruleForm.verifyId);
           params.append("netName", this.ruleForm.netName);
-          console.log(this.ruleForm.netName);
           params.append("norm", this.ruleForm.norm);
-          console.log(this.ruleForm.testImageInfoJson);
           params.append("testImageInfoJson", this.ruleForm.testImageInfoJson);
           const verifyDeepCert = (params) =>
             post(`/verify/deepcert/${this.$store.getters.userId}`, params);
@@ -237,6 +212,8 @@ export default {
               this.notify("websocket未建立", "error");
             } else {
               this.notify("未知错误", "error");
+              console.log(res.status);
+              console.log(this.ruleForm.testImageInfoJson);
             }
           });
         } else {
