@@ -22,7 +22,6 @@
           :on-success="handleSuccessMod"
           :on-preview="handlePreviewMod"
           :on-remove="handleRemoveMod"
-          multiple
           :limit="1"
           :on-exceed="handleExceedMod"
           :file-list="modelList"
@@ -41,6 +40,7 @@
           class="pic-upload"
           action="http://219.228.60.69:9090/winr/images"
           name="images"
+          multiple
           :on-success="handleSuccessPic"
           :on-remove="handleRemovePic"
           :on-preview="handlePreviewPic"

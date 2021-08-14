@@ -16,7 +16,11 @@
         <el-button type="warning" plain @click="use_deepcert">DeepCert</el-button>
       </el-row>
     </div>
-    <div class="title2">开发人员及联系方式</div>
+    <div class="title2">研究发表</div>
+    <div class="introduction">阿巴阿巴阿巴aaabbb</div>
+    <div class="title2">参考资料</div>
+    <div class="introduction">阿巴阿巴阿巴aaabbb</div>
+    <div class="title2">联系我们</div>
 <!--    <div align="center">-->
 <!--      <img :src="groupPhoto" width="350px" height="260px">-->
 <!--    </div>-->
