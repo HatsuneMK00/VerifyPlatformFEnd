@@ -52,7 +52,7 @@ export default {
   },
   data() {
     return {
-      groupPhoto: require('@/assets/photo/group_photo01.jpg')
+      groupPhoto: require('@/assets/photo/group_photo5.jpg')
     }
   },
   methods: {
