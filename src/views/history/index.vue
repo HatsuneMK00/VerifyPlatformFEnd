@@ -34,7 +34,7 @@
       <el-table-column label="验证ID" prop="verifyId"></el-table-column>
       <el-table-column label="验证工具" prop="tool"></el-table-column>
       <el-table-column label="开始时间" prop="startTime" :formatter="StartTimeFormat"></el-table-column>
-      <el-table-column label="开始时间2" prop="startTime"></el-table-column>
+<!--      <el-table-column label="开始时间2" prop="startTime"></el-table-column>-->
       <el-table-column label="当前状态" prop="status"></el-table-column>
       <el-table-column
         fixed="right"

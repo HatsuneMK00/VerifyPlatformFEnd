@@ -147,14 +147,12 @@ export default {
         })
         return
       }
-      // get tag of picture
-      // var tagPic = prompt('请输入图片' + fileList[fileList.length - 1].name + '的标签')
       var tagPic = ''
       // insert into picNameTag
       this.$set(
         this.picNameTagTableData,
         this.picNameTagTableData.length,
-        { name_user: fileList[fileList.length - 1].name, tag: tagPic, name_server: response.data.imageNames[0] }
+        { name_user: file.name, tag: tagPic, name_server: response.data.imageNames[0] }
       )
       console.log(fileList)
       console.log(this.picNameTagTableData)
