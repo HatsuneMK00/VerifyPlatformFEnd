@@ -1,12 +1,15 @@
 <!-- eslint-disable -->
 <template>
-  <div class="app-container">
+  <div class="app-container" align="center">
     <div class="warp">
       <div class="title">DeepCert 鲁棒半径计算工具</div>
       <div class="introduction">
-        简介：DeepCert是一款用于快速计算给定神经网络鲁棒半径的工具。旨在快速、高效地解决鲁棒半径的计算问题。
-        <br />
-        开发者：华东师范大学 吴旖婷
+        DeepCert是之前基于线性近似的鲁棒性验证方法的延续，这项工作创新地提出了一种对一般激活函数的细粒度线性近似方法，用于计算卷积神经网络更大的鲁棒性下界。该方法计算复杂度较低，适用于使用较紧的上下界和下界来逼近类sigmoid函数。我们在最先进的鲁棒性下界认证工具CNN-Cert上实现了该方法。在具有不同激活函数的各种神经网络的情况下，我们在CNN-Cert的框架基础上实现了DeepCert验证工具。
+        
+        <br /><br />
+        <div style="text-indent: 0.75cm">
+        我们在MNIST和CIFAR-10上对训练好的含有不同结构的神经网络进行验证。实验结果表明，在同一网络的指定输入样本和指定分类下，我们的方法计算出的鲁棒半径比CNN-Cert提高了76.57%，比CROWN提高了286.28%，比FROWN提高了245.69%，且计算效率高而稳定。
+        </div>
       </div>
 
       <div style="text-align: center; padding: 30px">
@@ -25,14 +28,14 @@
               label-width="200px"
             >
 
-              <el-form-item label="上传模型文件:">
+              <el-form-item label="上传模型文件:" align="left">
                 <el-upload
                   ref="upload2"
                   name="modelFile"
                   action="deepcert/model"
                   :http-request="httpRequest2"
                 >
-                  <el-button size="small" type="primary"
+                  <el-button type="primary"
                     >点击上传模型文件</el-button
                   >
                   <div slot="tip" class="el-upload__tip">
@@ -41,7 +44,7 @@
                 </el-upload>
               </el-form-item>
 
-              <el-form-item label="上传图片：">
+              <el-form-item label="上传图片：" align="left">
                 <el-upload
                   ref="upload1"
                   multiple
@@ -58,7 +61,7 @@
                 </el-upload>
               </el-form-item>
 
-              <el-form-item label="图片标签：">
+              <el-form-item label="图片标签：" align="left">
                <div>
                  <el-form>
                    <!-- eslint-disable -->
@@ -76,7 +79,7 @@
                </div>
               </el-form-item>
 
-              <el-form-item prop="norm" label="扰动半径度量标准">
+              <el-form-item prop="norm" label="扰动半径度量标准" align="left">
                 <el-radio v-model="ruleForm.norm" label="1">L1范数</el-radio>
                 <el-radio v-model="ruleForm.norm" label="2">L2范数</el-radio>
                 <el-radio v-model="ruleForm.norm" label="i">无穷范数</el-radio>
@@ -271,12 +274,14 @@ export default {
 .introduction {
   font-family: "微软雅黑";
   font-size: 15px;
-  line-height: 50px;
-  text-align: center;
+  line-height: 35px;
+  text-align: left;
   border: solid 1px blue;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   border-radius: 5px;
   transform-origin: 0 0;
+  padding: 0.5cm 0.5cm 0.5cm 0.5cm;
+  text-indent: 0.75cm;
 }
 .title {
   position: relative;
