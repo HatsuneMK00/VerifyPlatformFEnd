@@ -61,8 +61,8 @@ export default {
   },
   methods: {
     getDatefrom() {
-      this.verifyId = this.$route.query.verifyId
-      // this.verifyId = 'asdfqeruhasdfjh1387123'
+      // this.verifyId = this.$route.query.verifyId
+      this.verifyId = 'asdfqeruhasdfjh1387123'
       const params = new URLSearchParams()
       params.append('verifyId', this.verifyId)
       const verifyDeepCert = (params) =>
