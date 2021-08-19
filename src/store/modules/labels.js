@@ -83,9 +83,22 @@ const gtsrbLabelOpt = [
     { label: '8', value: 8 },
     { label: '9', value: 9 }
   ];
+  const cifarPicLabelOpt = [
+    { label: 'airplane', value: 0 },
+    { label: 'automobile', value: 1 },
+    { label: 'bird', value: 2 },
+    { label: 'cat', value: 3 },
+    { label: 'deer', value: 4 },
+    { label: 'dog', value: 5 },
+    { label: 'frog', value: 6 },
+    { label: 'horse', value: 7 },
+    { label: 'ship', value: 8 },
+    { label: 'truck', value: 9 }
+  ];
 export default {
   cifar10LabelOpt,
   fashion_mnistLabelOpt,
   gtsrbLabelOpt,
-  numberPicLabelOpt
+  numberPicLabelOpt,
+  cifarPicLabelOpt
 }
