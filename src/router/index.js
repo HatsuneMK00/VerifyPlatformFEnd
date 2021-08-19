@@ -42,7 +42,18 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
+  {
+    path: '/dashboard',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: '首页',
+        component: () => import('@/views/dashboard/index'),
+        meta: { title: '首页', icon: 'el-icon-house' }
+      }
+    ]
+  },
   {
     path: '/WiNR',
     component: Layout,
@@ -96,13 +107,11 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
     path: '/',
     component: Layout,
-    redirect: '/WiNR/index'
+    redirect: '/dashboard/index'
   },
-
   {
     path: '/history',
     component: Layout,

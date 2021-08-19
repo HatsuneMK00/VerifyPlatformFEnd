@@ -1,210 +1,144 @@
 <!-- eslint-disable -->
 <template>
-  <div class="app-container">
+  <div class="app-container" align="center">
     <div class="warp">
       <div class="title">DeepCert 鲁棒半径计算工具</div>
       <div class="introduction">
-        简介：DeepCert是一款用于快速计算给定神经网络鲁棒半径的工具。旨在快速、高效地解决鲁棒半径的计算问题。
-        <br />
-        开发者：华东师范大学 吴旖婷
+        DeepCert是之前基于线性近似的鲁棒性验证方法的延续，这项工作创新地提出了一种对一般激活函数的细粒度线性近似方法，用于计算卷积神经网络更大的鲁棒性下界。该方法计算复杂度较低，适用于使用较紧的上下界和下界来逼近类sigmoid函数。我们在最先进的鲁棒性下界认证工具CNN-Cert上实现了该方法。在具有不同激活函数的各种神经网络的情况下，我们在CNN-Cert的框架基础上实现了DeepCert验证工具。
+        
+        <br /><br />
+        <div style="text-indent: 0.75cm">
+        我们在MNIST和CIFAR-10上对训练好的含有不同结构的神经网络进行验证。实验结果表明，在同一网络的指定输入样本和指定分类下，我们的方法计算出的鲁棒半径比CNN-Cert提高了76.57%，比CROWN提高了286.28%，比FROWN提高了245.69%，且计算效率高而稳定。
+        </div>
       </div>
 
-      <div style="text-align:center;padding:30px" >
+      <div style="text-align: center; padding: 30px">
         <transition name="el-zoom-in-center">
-          <el-button round @click="show" v-show="!isDisplay">开始使用DeepCert！</el-button>
+          <el-button round @click="show" v-show="!isDisplay"
+            >开始使用DeepCert！</el-button
+          >
         </transition>
       </div>
 
       <transition name="el-fade-in">
-        <div class="main" v-show="isDisplay">
-          <el-form :model="ruleForm" ref="ruleFrom">
-            <el-form-item prop="core" label="请选择是否启用Core">
-              <el-radio v-model="ruleForm.core" label="True">True</el-radio>
-              <el-radio v-model="ruleForm.core" label="False">False</el-radio>
-            </el-form-item>
-            <el-form-item
-              prop="netName"
-              label="请选择模型"
-              v-if="ruleForm.core === 'False'"
+        <div v-show="isDisplay">
+            <el-form
+              :model="ruleForm"
+              ref="ruleFrom"
+              label-width="200px"
             >
-              <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
-                <el-option
-                  v-for="item in options1"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value"
+
+              <el-form-item label="上传模型文件:" align="left">
+                <el-upload
+                  ref="upload2"
+                  name="modelFile"
+                  action="deepcert/model"
+                  :http-request="httpRequest2"
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item
-              prop="netName"
-              label="请选择模型"
-              v-else-if="ruleForm.core === 'True'"
-            >
-              <el-select v-model="ruleForm.netName" placeholder="请选择模型路径">
-                <el-option
-                  v-for="item in options2"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value"
+                  <el-button type="primary"
+                    >点击上传模型文件</el-button
+                  >
+                  <div slot="tip" class="el-upload__tip">
+                    备注：目前只支持使用sigmoid激活函数的模型
+                  </div>
+                </el-upload>
+              </el-form-item>
+
+              <el-form-item label="上传图片：" align="left">
+                <el-upload
+                  ref="upload1"
+                  multiple
+                  name="images"
+                  action=""
+                  accept=".png, .jpg, .jpeg"
+                  :http-request="httpRequest1"
+                  list-type="picture"
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item prop="netName" label="请选择模型" v-else>
-              <el-select v-model="ruleForm.netName" placeholder="请先选择core">
-              </el-select>
-            </el-form-item>
-            <el-form-item prop="numOfImage" label="请选择图片数量">
-              <el-input
-                v-model="ruleForm.numOfImage"
-                placeholder="请输入图片数量"
-              ></el-input>
-            </el-form-item>
-            <el-form-item prop="norm" label="请选择范数">
-              <el-radio v-model="ruleForm.norm" label="1">1</el-radio>
-              <el-radio v-model="ruleForm.norm" label="2">2</el-radio>
-              <el-radio v-model="ruleForm.norm" label="i">i</el-radio>
-            </el-form-item>
-            <el-form-item prop="activation" label="请选择activation">
-              <el-radio v-model="ruleForm.activation" label="sigmoid">sigmoid</el-radio>
-              <el-radio v-model="ruleForm.activation" label="tanh">tanh</el-radio>
-              <el-radio v-model="ruleForm.activation" label="atan">atan</el-radio>
-            </el-form-item>
-            <el-form-item prop="isCifar" label="请选择是否启用cifar">
-              <el-radio v-model="ruleForm.isCifar" label="True">True</el-radio>
-              <el-radio v-model="ruleForm.isCifar" label="False">False</el-radio>
-            </el-form-item>
-          </el-form>
-          <span slot="footer">
-          <el-button @click="verify">开始计算鲁棒半径</el-button>
-        </span>
+                  <el-button type="primary">点击上传图片</el-button>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传jpg/png文件
+                  </div>
+                </el-upload>
+              </el-form-item>
+
+              <el-form-item label="图片标签：" align="left">
+               <div>
+                 <el-form>
+                   <!-- eslint-disable -->
+                   <el-form-item v-for="(picItem) in picTable" :label="picItem.name">
+                     <el-select v-model="picItem.tag" placeholder="请选择标签">
+                         <el-option
+                           v-for="opt1 in numberPicLabelOpt"
+                           :label="opt1.label"
+                           :value="opt1.value"
+                         >
+                         </el-option>
+                     </el-select>
+                   </el-form-item>
+                 </el-form>
+               </div>
+              </el-form-item>
+
+              <el-form-item prop="norm" label="扰动半径度量标准" align="left">
+                <el-radio v-model="ruleForm.norm" label="1">L1范数</el-radio>
+                <el-radio v-model="ruleForm.norm" label="2">L2范数</el-radio>
+                <el-radio v-model="ruleForm.norm" label="i">无穷范数</el-radio>
+              </el-form-item>
+            </el-form>
+
+            <div style="text-align:center">
+              <el-button type="primary" round @click="verify">开始计算鲁棒半径</el-button>
+            </div>
         </div>
       </transition>
     </div>
 
     <el-dialog :visible.sync="waitingVisible" width="400px" center>
-      <div v-loading="loading" element-loading-text="拼命计算中" style="height:100px"></div>
-      <div style="height:65px;text-align:center;padding:20px">正在计算，请耐心等待</div>
-      <div style="text-align:center">
+      <div
+        v-loading="loading"
+        element-loading-text="拼命计算中"
+        style="height: 100px"
+      ></div>
+      <div style="height: 65px; text-align: center; padding: 20px">
+        正在计算，请耐心等待
+      </div>
+      <div style="text-align: center">
         <el-button @click="back">后台运行</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
 /* eslint-disable */
 import { get, post } from "./indexByQzt";
+import labelOpt from '@/store/modules/labels.js'
 export default {
   data() {
     return {
-      isDisplay:false,
-      loading:false,
-      waitingVisible:false,
+      isDisplay: false,
+      loading: false,
+      waitingVisible: false,
+      file: [],
+      modelFile: "",
+      initalName:"",
+      imageName: [],
+      info: "",
+      infos: [],
+      str: "{",
+      picTable: [],
       ruleForm: {
         verifyId: "",
         netName: "",
-        numOfImage: "",
         norm: "",
-        core: "",
-        activation: "",
-        isCifar: "",
-        isTinyImageNet: "False",
+        testImageInfoJson: "",
       },
-      options1: [
-        {
-          value: "models/mnist_cnn_7layer_atan",
-        },
-        {
-          value: "models/mnist_cnn_7layer_tanh",
-        },
-        {
-          value: "models/mnist_cnn_7layer_sigmoid",
-        },
-        {
-          value: "models/mnist_cnn_lenet_atan",
-        },
-        {
-          value: "models/mnist_cnn_lenet_tanh",
-        },
-        {
-          value: "models/mnist_cnn_lenet_sigmoid",
-        },
-        {
-          value: "models/mnist_resnet_3_atan",
-        },
-        {
-          value: "models/mnist_resnet_3_tanh",
-        },
-        {
-          value: "models/mnist_resnet_3_sigmoid",
-        },
-        {
-          value: "models/mnist_resnet_4_atan",
-        },
-        {
-          value: "models/mnist_resnet_4_tanh",
-        },
-        {
-          value: "models/mnist_resnet_4_sigmoid",
-        },
-        {
-          value: "models/mnist_resnet_5_atan",
-        },
-        {
-          value: "models/mnist_resnet_5_tanh",
-        },
-        {
-          value: "models/mnist_resnet_5_sigmoid ",
-        },
-        {
-          value: "models/cifar_cnn_7layer_atan",
-        },
-        {
-          value: "models/cifar_cnn_7layer_tanh",
-        },
-        {
-          value: "models/cifar_cnn_7layer_sigmoid",
-        },
-      ],
-      options2: [
-        {
-          value: "models/mnist_cnn_4layer_5_3_atan",
-        },
-        {
-          value: "models/mnist_cnn_4layer_5_3_tanh",
-        },
-        {
-          value: "models/mnist_cnn_4layer_5_3_sigmoid",
-        },
-        {
-          value: "models/mnist_cnn_8layer_5_3_atan",
-        },
-        {
-          value: "models/mnist_cnn_8layer_5_3_tanh",
-        },
-        {
-          value: "models/mnist_cnn_8layer_5_3_sigmoid",
-        },
-        {
-          value: "models/cifar_cnn_7layer_5_3_atan",
-        },
-        {
-          value: "models/cifar_cnn_7layer_5_3_tanh",
-        },
-        {
-          value: "models/cifar_cnn_7layer_5_3_sigmoid",
-        },
-      ],
-      data: {
-        imageUrl: "",
-      },
+      numberPicLabelOpt: labelOpt.numberPicLabelOpt
     };
   },
   methods: {
-    show(){
+    show() {
       this.isDisplay = true;
     },
     notify(title, type) {
@@ -213,52 +147,87 @@ export default {
         type: type,
       });
     },
+    httpRequest1(param) {
+      this.initalName = param.file.name; 
+      this.$set(
+        this.picTable, 
+        this.picTable.length, {
+        name: this.initalName,
+        tag: "",
+      });
+      let upData = new FormData();
+      upData.append("images", param.file);
+      post("/deepcert/images", upData).then((res) => {
+        if (res.status == 200) {
+          this.notify("图片上传成功", "success");
+          for (let i = 0; i < res.data.imageNames.length; i++) {
+            this.imageName.push(res.data.imageNames[i]);
+          }
+        } else {
+          this.notify("图片上传失败", "error");
+        }
+      });  
+    },
+    httpRequest2(param) {
+      this.modelFile = param.file;
+      let upData = new FormData();
+      upData.append("modelFile", this.modelFile);
+      this.ruleForm.netName = this.modelFile.name;
+      post("/deepcert/model", upData).then((res) => {
+        if (res.status == 200) {
+          this.notify("模型上传成功", "success");
+        } else {
+          this.notify("模型上传失败", "error");
+        }
+      });
+    },
     verify() {
       const getVerifyId = (params) => get(`/verify/verify_id`);
       getVerifyId().then((res) => {
         if (res.status == 200) {
-          this.notify("获取verifyId成功", "success");
           this.ruleForm.verifyId = res.data.verifyId;
-          console.log(this.ruleForm.verifyId)
+          this.notify("获取verifyId成功", "success");
+           for (let j = 0; j < this.picTable.length; j++) {
+             this.infos.push(this.picTable[j].tag);
+           }
+          for (let i = 0; i < this.infos.length; i++) {
+            this.str =
+              this.str + '"' + this.imageName[i] + '":"' + this.infos[i] + '"';
+            if (i != this.infos.length - 1) this.str = this.str + ",";
+          }
+          this.str = this.str + "}";
+          this.ruleForm.testImageInfoJson = this.str;
+          let params = new URLSearchParams();
+          params.append("verifyId", this.ruleForm.verifyId);
+          params.append("netName", this.ruleForm.netName);
+          params.append("norm", this.ruleForm.norm);
+          params.append("testImageInfoJson", this.ruleForm.testImageInfoJson);
+          const verifyDeepCert = (params) =>
+            post(`/verify/deepcert/${this.$store.getters.userId}`, params);
+          verifyDeepCert(params).then((res) => {
+            if (res.status == 200) {
+              this.notify("验证成功", "success");
+              this.loading = true;
+              this.waitingVisible = true;
+            } else if (res.status == -400) {
+              this.notify("参数有误", "error");
+            } else if (res.status == -100) {
+              this.notify("websocket未建立", "error");
+            } else {
+              this.notify("未知错误", "error");
+              console.log(res.status);
+              console.log(this.ruleForm.testImageInfoJson);
+            }
+          });
         } else {
           this.notify("获取verifyId失败", "error");
         }
       });
-
-      let params = new URLSearchParams();
-      console.log(this.ruleForm.verifyId)
-      params.append("verifyId", this.ruleForm.verifyId);
-      params.append("netName", this.ruleForm.netName);
-      params.append("numOfImage", this.ruleForm.numOfImage);
-      params.append("norm", this.ruleForm.norm);
-      params.append("core", this.ruleForm.core);
-      params.append("activation", this.ruleForm.activation);
-      params.append("isCifar", this.ruleForm.isCifar);
-      params.append("isTinyImageNet", this.ruleForm.isTinyImageNet);
-      const verifyDeepCert = (params) =>
-        post(`/verify/deepcert/${this.$store.getters.userId}`, params);
-      verifyDeepCert(params)
-        .then((res) => {
-          if (res.status == 200) {
-            this.notify("验证成功", "success");
-            this.loading = true;
-            this.waitingVisible = true;
-          } else if(res.status == -400){
-            this.notify("参数有误", "error");
-          }
-          else if(res.status == -100){
-            this.notify("websocket未建立", "error");
-          }
-          else{
-            this.notify("未知错误", "error");
-
-          }
-        })
     },
-    back(){
+    back() {
       this.loading = false;
       this.waitingVisible = false;
-    }
+    },
   },
   computed: {
     onWebSocketMessage() {
@@ -270,6 +239,7 @@ export default {
     onWebSocketMessage: function(msg) {
       console.log(msg)
       var succ = msg.slice(7, 11)
+      console.log(succ)
       if (succ === 'succ') {
         var verifyId = msg.split(':')[1]
         if (verifyId == null) {
@@ -304,12 +274,14 @@ export default {
 .introduction {
   font-family: "微软雅黑";
   font-size: 15px;
-  line-height: 50px;
-  text-align: center;
+  line-height: 35px;
+  text-align: left;
   border: solid 1px blue;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   border-radius: 5px;
   transform-origin: 0 0;
+  padding: 0.5cm 0.5cm 0.5cm 0.5cm;
+  text-indent: 0.75cm;
 }
 .title {
   position: relative;
