@@ -27,7 +27,7 @@
             <div>
               <div class="lable">测试样本{{ obj.id }}</div>
               <div class="inner clearfix">
-                <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" class="image">
+                <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" :class="obj.imge_class">
                 <div class="label_class">{{ obj.lable }}</div>
               </div>
             </div>
@@ -61,8 +61,8 @@ export default {
   },
   methods: {
     getDatefrom() {
-      this.verifyId = this.$route.query.verifyId
-      // this.verifyId = 'e00187d86f6548288c8fda84779f8314'
+      // this.verifyId = this.$route.query.verifyId
+      this.verifyId = 'e00187d86f6548288c8fda84779f8314'
       // this.verifyId = '563d4a42670045ed8dd0212f0c60c091'
       const params = new URLSearchParams()
       params.append('verifyId', this.verifyId)
@@ -88,19 +88,21 @@ export default {
                 robust: '最小扰动半径：' + temRobust,
                 lable: '标签：' + tempLable,
                 url1: tempUrl,
-                target_label: '最小对抗样本标签：' + tempTartge
+                target_label: '最小对抗样本标签：' + tempTartge,
+                imge_class: 'image'
               })
             } else {
               // eslint-disable-next-line no-redeclare
               var tempUrl = 'http://219.228.60.69:9090/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
               // eslint-disable-next-line no-redeclare
-              var tempTartge = '没有正确分类'
+              var tempTartge = '该图片神经网络未正确分类，不进行鲁棒性验证'
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '',
                 lable: '',
                 url1: tempUrl,
-                target_label: tempTartge
+                target_label: tempTartge,
+                imge_class: 'image1'
               })
             }
           }
@@ -185,5 +187,10 @@ export default {
   left: 0;
   top: 10px;
 
+}
+.inner .image1{
+  position: absolute;
+  left: 60px;
+  top: 10px;
 }
 </style>
