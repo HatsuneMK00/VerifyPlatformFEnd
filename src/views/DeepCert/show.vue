@@ -27,13 +27,13 @@
             <div>
               <div class="lable">测试样本{{ obj.id }}</div>
               <div class="inner clearfix">
-                <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" class="image">
-                <div class="label_class">标签：{{ obj.lable }}</div>
+                <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" :class="obj.imge_class">
+                <div class="label_class">{{ obj.lable }}</div>
               </div>
             </div>
             <div style="padding: 16px 0px 0px 0px;">
-              <div class="robust_class">最小扰动半径：{{ obj.robust }}</div>
-              <div class="label_class2">最小对抗样本标签：{{ obj.target_label }}</div>
+              <div class="robust_class">{{ obj.robust }}</div>
+              <div class="label_class2">{{ obj.target_label }}</div>
             </div>
           </el-card>
         </el-col>
@@ -61,8 +61,9 @@ export default {
   },
   methods: {
     getDatefrom() {
-      this.verifyId = this.$route.query.verifyId
-      // this.verifyId = 'asdfqeruhasdfjh1387123'
+      // this.verifyId = this.$route.query.verifyId
+      this.verifyId = 'e00187d86f6548288c8fda84779f8314'
+      // this.verifyId = '563d4a42670045ed8dd0212f0c60c091'
       const params = new URLSearchParams()
       params.append('verifyId', this.verifyId)
       const verifyDeepCert = (params) =>
@@ -74,25 +75,39 @@ export default {
           var count = 0
           for (var temp in res.data.result) {
             count++
-            console.log(res.data.result[temp])
-            var tempUrl = 'http://219.228.60.69:9090/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
-            var tempLable = res.data.result[temp].true_label
-            var temRobust = res.data.result[temp].robustness
-            var tempModel = res.data.result[temp].model
-            var tempTartge = res.data.result[temp].target_label
-            this.tableData[0].model_name = tempModel.slice(7)
-            console.log(this.tableData.model_name)
-            this.objs.push({
-              id: parseInt(temp) + 1,
-              robust: temRobust,
-              lable: tempLable,
-              url1: tempUrl,
-              target_label: tempTartge
-            })
-            console.log(this.objs[temp])
+            if (res.data.result[temp].robustness !== undefined) {
+              console.log(res.data.result[temp])
+              var tempUrl = 'http://219.228.60.69:9090/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
+              var tempLable = res.data.result[temp].true_label
+              var temRobust = res.data.result[temp].robustness
+              var tempModel = res.data.result[temp].model
+              var tempTartge = res.data.result[temp].target_label
+              this.tableData[0].model_name = tempModel.slice(7)
+              this.objs.push({
+                id: parseInt(temp) + 1,
+                robust: '最小扰动半径：' + temRobust,
+                lable: '标签：' + tempLable,
+                url1: tempUrl,
+                target_label: '最小对抗样本标签：' + tempTartge,
+                imge_class: 'image'
+              })
+            } else {
+              // eslint-disable-next-line no-redeclare
+              var tempUrl = 'http://219.228.60.69:9090/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
+              // eslint-disable-next-line no-redeclare
+              var tempTartge = '该图片神经网络未正确分类，不进行鲁棒性验证'
+              this.objs.push({
+                id: parseInt(temp) + 1,
+                robust: '',
+                lable: '',
+                url1: tempUrl,
+                target_label: tempTartge,
+                imge_class: 'image1'
+              })
+            }
           }
+          console.log(this.objs)
           this.tableData[0].number = count
-          console.log(this.tableData[0].number)
         } else {
           alert(res.data.verificationStatus)
         }
@@ -143,7 +158,8 @@ export default {
 }
 .el-card{
   width: 25%;
-
+  height: 360px;
+  margin-bottom: 50px;
 }
 .el-card__body{
   width: 400px;
@@ -171,5 +187,10 @@ export default {
   left: 0;
   top: 10px;
 
+}
+.inner .image1{
+  position: absolute;
+  left: 60px;
+  top: 10px;
 }
 </style>
