@@ -10,10 +10,16 @@
       :data="tableData"
       cell-style="font-size: 16px"
       header-cell-style="font-size: 16px"
-      style="width: 60%; margin: 30px auto 20px auto">
+      style="width: 70%; margin: 30px auto 20px auto">
       <el-table-column
         prop="tool"
         label="工具"
+        width="100"
+        align="center">
+      </el-table-column>
+      <el-table-column
+        prop="time_total"
+        label="总耗时"
         width="100"
         align="center">
       </el-table-column>
@@ -40,6 +46,9 @@
       <el-col :span="4" class="col">
         <div align="middle" style="margin-top: 200px">
           <span class="title">测试用例{{ image.imageId+1 }}</span>
+        </div>
+        <div align="middle" style="margin-top: 10px">
+          <span style="color: #909399">验证耗时: {{ image.time_sum }}s</span>
         </div>
       </el-col>
       <el-col :span="8" class="col">
@@ -69,7 +78,7 @@
             <img src="@/assets/logo.png" class="logo_img">
           </div>
           <div v-else-if="image.misclassified === 'True'" class="img_box">
-            <img src="@/assets/question.png" class="logo_img">
+            <img src="@/assets/wrong.png" class="logo_img">
           </div>
           <div v-else>
             <img :src="image.advExamples" class="image">
@@ -136,6 +145,7 @@ export default {
       verifyId: '',
       tableData: [{
         tool: 'WiNR',
+        time_total: '',
         eps: '',
         dataset: '',
         netName: ''
@@ -176,6 +186,7 @@ export default {
           }
         }
         var tempImage = {}
+        let time_toal = 0
         // eslint-disable-next-line no-unmodified-loop-condition
         for (let i = 0; flag === 0; i++) {
           imageKey = 'image_' + i
@@ -189,9 +200,10 @@ export default {
               misclassified: tempImage.misclassified,
               robust: tempImage.robust,
               unrobust: tempImage.unrobust,
-              time_sum: tempImage.time_sum,
+              time_sum: parseFloat(tempImage.time_sum).toFixed(2),
               unknown: tempImage.unknown
             })
+            time_toal = time_toal + parseFloat(tempImage.time_sum)
             this.images[i]['originImages'] = tempOrigin[imageKey].originImages
             this.images[i]['originLabel'] = tempOrigin[imageKey].originLabel
             if (tempImage.unrobust === 'True') {
@@ -202,6 +214,7 @@ export default {
             console.log(this.images[i])
           }
         }
+        this.tableData[0].time_total = time_toal.toFixed(2) + 's'
       } else {
         alert(res.data.verificationStatus)
       }
