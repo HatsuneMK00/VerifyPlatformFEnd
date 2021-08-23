@@ -10,6 +10,11 @@
         <div style="text-indent: 0.75cm">
           我们在MNIST和CIFAR-10上对训练好的含有不同结构的神经网络进行验证。实验结果表明，在同一网络的指定输入样本和指定分类下，我们的方法计算出的鲁棒半径比CNN-Cert提高了76.57%，比CROWN提高了286.28%，比FROWN提高了245.69%，且计算效率高而稳定。
         </div>
+        <div>
+          <el-button type="text">
+            <a href="/pdf/Deepcert工具使用说明.pdf">使用说明文档</a>
+          </el-button>
+        </div>
       </div>
 
       <div style="text-align: center; padding: 30px">
