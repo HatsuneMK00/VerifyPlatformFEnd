@@ -7,38 +7,43 @@
       :header-cell-style="{'text-align':'center'}"
       :cell-style="{'text-align':'center'}"
     >
+
+      <el-table-column
+        prop="set"
+        label="数据集"
+        class="td"
+      />
       <el-table-column
         prop="model_name"
         label="模型"
-        width="180"
         class="td"
       />
       <el-table-column
         prop="number"
         label="验证图片数量"
-        width="180"
         class="td"
       />
     </el-table>
-    <div class="pic">
-      <el-row v-for="obj in objs" :key="obj" type="flex" justify="center" :gutter="30">
-        <el-col :span="12" class="el-col">
-          <el-card align="middle" :body-style="{ padding: '20px', margin: '0px'}" class="el-card__body">
-            <div>
-              <div class="lable">测试样本{{ obj.id }}</div>
-              <div class="inner clearfix">
-                <img style="object-fit: contain; width: 75px; height: 75px" :src="obj.url1" :class="obj.imge_class">
-                <div class="label_class">{{ obj.lable }}</div>
-              </div>
-            </div>
-            <div style="padding: 16px 0px 0px 0px;">
-              <div class="robust_class">{{ obj.robust }}</div>
-              <div class="label_class2">{{ obj.target_label }}</div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
+    <el-row v-for="obj in objs" :key="obj" type="flex" justify="center" :gutter="30">
+      <el-col :span="24" class="el-col">
+        <div class="des">
+          <div class="title">
+            测试样本{{ obj.id }}
+          </div>
+        </div>
+        <div class="text">
+          <div class="robust_class">{{ obj.robust }}</div>
+          <div class="robust_class">{{ obj.target_label }}</div>
+        </div>
+        <div class="card">
+          <div class="title">
+            <span class="title">原始图片</span>
+          </div>
+          <img :src="obj.url1">
+          <span class="label_class">{{ obj.lable }}</span>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -52,7 +57,8 @@ export default {
       objs: [],
       tableData: [{
         model_name: '',
-        number: ''
+        number: '',
+        set: ''
       }]
     }
   },
@@ -61,8 +67,8 @@ export default {
   },
   methods: {
     getDatefrom() {
-      // this.verifyId = this.$route.query.verifyId
-      this.verifyId = 'e00187d86f6548288c8fda84779f8314'
+      this.verifyId = this.$route.query.verifyId
+      // this.verifyId = 'e00187d86f6548288c8fda84779f8314'
       // this.verifyId = '563d4a42670045ed8dd0212f0c60c091'
       const params = new URLSearchParams()
       params.append('verifyId', this.verifyId)
@@ -99,7 +105,7 @@ export default {
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '',
-                lable: '',
+                lable: '标签：分类错误',
                 url1: tempUrl,
                 target_label: tempTartge,
                 imge_class: 'image1'
@@ -108,6 +114,9 @@ export default {
           }
           console.log(this.objs)
           this.tableData[0].number = count
+          // eslint-disable-next-line no-unused-vars
+          var arr = this.tableData[0].model_name.split('_')
+          this.tableData[0].set = arr[0]
         } else {
           alert(res.data.verificationStatus)
         }
@@ -131,6 +140,10 @@ export default {
   clear: both;
   visibility: hidden;
 }
+*{
+  padding: 0px;
+  margin: 0px;
+}
 .table {
   position: relative;
   text-align: center;
@@ -141,56 +154,77 @@ export default {
 }
 .list_table{
   text-align: center;
-  width: 360px;
+  width: 50%;
   height: 100%;
   margin: 0 auto;
+  margin-bottom: 20px;
 
 }
-.pic {
-  margin: 5% auto;
-  overflow: hidden;
-
-}
-.el-row{
-  float: left;
-  margin: 0 auto;
-  width: 50%;
-}
-.el-card{
-  width: 25%;
-  height: 360px;
-  margin-bottom: 50px;
-}
-.el-card__body{
-  width: 400px;
-}
-.robust_class,.label_class2{
-  font-size: 20px;
-  padding: 10px;
-}
-.lable{
-  font-size: 25px;
-  padding: 20px;
-}
-.inner{
-  height: 100px;
-  width: 200px;
+.el-col{
   position: relative;
+  height: 400px;
+  border-bottom: rgba(0,0,0,0.2) 1px solid;
+  border-top: rgba(0,0,0,0.2) 1px solid;
 }
-.inner .label_class{
-  position: absolute;
-  right: 20px;
-  top: 30px;
-}
-.inner .image{
-  position: absolute;
-  left: 0;
-  top: 10px;
+.card{
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+  display: inline-block;
+  position: relative;
+  top: 8%;
+  width: 400px;
+  height: 336px;
+  margin-left: 93px;
+  span{
+    font-size: 20px;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin: 9px 0px;
+    text-align: center;
+  }
+  img{
+    position: relative;
+    left: 75px;
+    width: 250px;
+    border: none;
+    height: 250px;
+  }
+  .label_class{
+    font-size: 18px;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin: 9px 0px;
+    text-align: center;
+  }
 
 }
-.inner .image1{
-  position: absolute;
-  left: 60px;
-  top: 10px;
+.text{
+  display: inline-block;
+  position: relative;
+  top: -22%;
+  width: 30%;
+  height: 250px;
 }
+.des{
+  margin: 0 auto;
+  display: inline-block;
+  position: relative;
+  width: 30%;
+  height: 250px;
+  left: 7%;
+  top: -27%;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 3px;
+}
+.robust_class{
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  margin: 27px 0px;
+}
+
 </style>
