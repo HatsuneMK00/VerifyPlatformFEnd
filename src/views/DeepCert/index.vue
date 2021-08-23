@@ -10,16 +10,11 @@
         <div style="text-indent: 0.75cm">
           我们在MNIST和CIFAR-10上对训练好的含有不同结构的神经网络进行验证。实验结果表明，在同一网络的指定输入样本和指定分类下，我们的方法计算出的鲁棒半径比CNN-Cert提高了76.57%，比CROWN提高了286.28%，比FROWN提高了245.69%，且计算效率高而稳定。
         </div>
-        <div>
-          <el-button type="text">
-            <a href="/pdf/Deepcert工具使用说明.pdf">使用说明文档</a>
-          </el-button>
-        </div>
       </div>
 
       <div style="text-align: center; padding: 30px">
         <transition name="el-zoom-in-center">
-          <el-button round @click="show" v-show="!isDisplay"
+          <el-button round @click="show" v-show="!isDisplay" type="primary"
             >开始使用DeepCert！</el-button
           >
         </transition>
@@ -40,28 +35,58 @@
                 ref="upload2"
                 name="modelFile"
                 action="deepcert/model"
+                :before-upload="beforeModelUpload"
                 :http-request="httpRequest2"
               >
                 <el-button type="primary">点击上传模型文件</el-button>
                 <div slot="tip" class="el-upload__tip">
-                  备注：目前只支持使用sigmoid激活函数的模型
+                    网络只支持 ‘卷积层+全连接层’ 或 ‘卷积层+池化层/残差层+全连接层’，暂时不支持全连接网络；
+                    <br />
+                    卷积层+全连接层文件名格式如下:‘模型文件名数据集_cnn_层数_filter数_kernel数_激活函数’；
+                    <br />
+                    卷积层+池化层/残差层+全连接层文件名格式如下：‘模型文件名数据集_cnn/resnet_网络层数/结构特征_激活函数’；
+                    <br />
+                    激活函数支持sigmoid,tanh和arctan
                 </div>
               </el-upload>
             </el-form-item>
 
             <el-form-item label="上传图片：" align="left">
-              <el-upload
-                ref="upload1"
-                multiple
-                name="images"
-                action=""
-                accept=".png, .jpg, .jpeg"
-                :http-request="httpRequest1"
-                list-type="picture"
-              >
-                <el-button type="primary">点击上传图片</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
-              </el-upload>
+              <div v-if="dataset == ''">请先选择数据集</div>
+              <div v-else-if="dataset == 'cifar'">
+                <el-upload
+                  ref="upload1"
+                  multiple
+                  name="images"
+                  action=""
+                  accept=".png"
+                  :before-upload="beforeUp_Cifar"
+                  :http-request="httpRequest1"
+                  list-type="picture"
+                >
+                  <el-button type="primary">点击上传图片</el-button>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传png文件,且比例为32*32*3的彩色图
+                  </div>
+                </el-upload>
+              </div>
+              <div v-else>
+                <el-upload
+                  ref="upload1"
+                  multiple
+                  name="images"
+                  action=""
+                  accept=".png"
+                  :before-upload="beforeUp_Mnist"
+                  :http-request="httpRequest1"
+                  list-type="picture"
+                >
+                  <el-button type="primary">点击上传图片</el-button>
+                  <div slot="tip" class="el-upload__tip">
+                    只能上传png文件,且比例为28*28的灰度图
+                  </div>
+                </el-upload>
+              </div>
             </el-form-item>
 
             <el-form-item label="图片标签：" align="left">
@@ -74,22 +99,20 @@
                     :label="picItem.name"
                   >
                     <el-select v-model="picItem.tag" placeholder="请选择标签">
-                      <div v-if="dataset == 'cifar'">
                         <el-option
+                          v-if="dataset == 'cifar'"
                           v-for="opt2 in cifarPicLabelOpt"
-                          :label="opt2.label"
                           :value="opt2.value"
+                          :label="opt2.label"
                         >
                         </el-option>
-                      </div>
-                      <div v-else-if="dataset == 'mnist'">
                         <el-option
+                          v-else-if="dataset == 'mnist'"
                           v-for="opt1 in numberPicLabelOpt"
                           :label="opt1.label"
                           :value="opt1.value"
                         >
                         </el-option>
-                      </div>
                     </el-select>
                   </el-form-item>
                 </el-form>
@@ -154,7 +177,7 @@ export default {
         testImageInfoJson: "",
       },
       numberPicLabelOpt: labelOpt.numberPicLabelOpt,
-      cifarPicLabelOpt: labelOpt.cifarPicLabelOpt,
+      cifarPicLabelOpt: labelOpt.cifarPicLabelOpt
     };
   },
   methods: {
@@ -167,32 +190,108 @@ export default {
         type: type,
       });
     },
-    httpRequest1(param) {
-      this.initalName = param.file.name;
-      this.$set(this.picTable, this.picTable.length, {
-        name: this.initalName,
-        tag: "",
-      });
-      let upData = new FormData();
-      upData.append("images", param.file);
-      post("/deepcert/images", upData).then((res) => {
-        if (res.status == 200) {
-          this.notify("图片上传成功", "success");
-          for (let i = 0; i < res.data.imageNames.length; i++) {
-            this.imageName.push(res.data.imageNames[i]);
-          }
-        } else {
-          this.notify("图片上传失败", "error");
+    beforeUp_Cifar(file) {
+      const isSize = new Promise((resolve, reject) => {
+        const width = 32;
+        const height = 32;
+        const _URL = window.URL || window.webkitURL;
+        const img = new Image();
+        img.onload = () => {
+          console.log(img.width);
+          console.log(img.height);
+          const valid = img.width == width && img.height == height;
+          valid ? resolve() : reject();
+        };
+        img.src = _URL.createObjectURL(file);
+      }).then(
+        () => {
+          return file;
+        },
+        () => {
+          this.notify("图片限制为32*32*3的彩色图,请重新上传", "error");
+          return Promise.reject();
         }
-      });
+      );
+      return isSize;
+    },
+    beforeUp_Mnist(file) {
+      const isSize = new Promise((resolve, reject) => {
+        const width = 28;
+        const height = 28;
+        const _URL = window.URL || window.webkitURL;
+        const img = new Image();
+        img.onload = () => {
+          console.log(img.width);
+          console.log(img.height);
+          const valid = img.width == width && img.height == height;
+          valid ? resolve() : reject();
+        };
+        img.src = _URL.createObjectURL(file);
+      }).then(
+        () => {
+          return file;
+        },
+        () => {
+          this.notify("图片限制为28*28的灰度图,请重新上传", "error");
+          return Promise.reject();
+        }
+      );
+      return isSize;
+    },
+    httpRequest1(param) {
+      let upData = new FormData();
+      console.log(param.file);
+      var img = document.createElement("img");
+      img.src = param.file.name;
+      console.log(img.width);
+      upData.append("images", param.file);
+      post("/deepcert/images", upData)
+        .then((res) => {
+          if (res.status == 200) {
+            this.notify("图片上传成功", "success");
+            //保留图片原始名称，选择tag时使用
+            this.initalName = param.file.name;
+            let initalTag;
+            //根据图片名称初始化tag
+            if (
+              param.file.name.slice(15, 16) >= "0" &&
+              param.file.name.slice(15, 16) <= "9"
+            ) {
+              initalTag = Number(param.file.name.slice(15, 16));
+            }
+            this.$set(this.picTable, this.picTable.length, {
+              name: this.initalName,
+              tag: initalTag,
+            });
+            //保存后端发来的图片名称
+            for (let i = 0; i < res.data.imageNames.length; i++) {
+              this.imageName.push(res.data.imageNames[i]);
+            }
+          } else {
+            //后端传来错误信息时的差错控制
+            this.notify("图片上传失败", "error");
+          }
+        })
+        .catch((err) => {
+          //网络问题的差错控制
+          this.notify("图片上传失败,请检查网络", "error");
+        });
+    },
+    beforeModelUpload(file){
+      //检测模型文件名是否合法
+      var patt1=new RegExp("([a-z]+_cnn_[0-9]+layer_[0-9]+_[0-9]+(_(sigmoid|tanh|arctan))?$)|([a-z]+_(cnn|resnet)_(([0-9]+)|([a-z]+))(_(sigmoid|tanh|arctan))?$)");
+      if(patt1.test(file.name)==false){
+        this.notify("文件名格式错误，请修改后再上传", "error");
+        return false;
+      }
     },
     httpRequest2(param) {
       this.modelFile = param.file;
       let upData = new FormData();
       upData.append("modelFile", this.modelFile);
-      this.ruleForm.netName = this.modelFile.name;
       post("/deepcert/model", upData).then((res) => {
         if (res.status == 200) {
+          this.ruleForm.netName = this.modelFile.name;
           this.notify("模型上传成功", "success");
         } else {
           this.notify("模型上传失败", "error");
@@ -295,7 +394,7 @@ export default {
 <style lang="scss" scoped>
 .warp {
   width: 80%;
-  margin: 0 auto;
+  margin: 0 atuo;
   overflow: visible;
 }
 .introduction {
