@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h3 align="center">WiNR 工具</h3>
+    <h3 align="center">WiNR</h3>
     <el-steps :active="0" align-center>
       <el-step title="参数选择"></el-step>
       <el-step title="开始验证"></el-step>
@@ -8,15 +8,16 @@
     </el-steps>
     <el-form ref="ParaPack" :model="ParaPacket" class="register-container" label-width="200px">
       <el-form-item label="数据集：">
-        <el-select v-model="ParaPacket.dataset" placeholder="请选择数据集">
+        <el-select v-model="ParaPacket.dataset" placeholder="请选择数据集" @change="datasetChange">
           <el-option label="cifar10" value="cifar10"></el-option>
           <el-option label="fashion_mnist" value="fashion_mnist"></el-option>
           <el-option label="gtsrb" value="gtsrb"></el-option>
         </el-select>
+        <div class="el-tip">注意：更换数据集会使已上传的图片作废</div>
       </el-form-item>
       <el-form-item label="网络模型：">
         <el-upload
-          class="model-upload"
+          ref="model-upload"
           action="http://219.228.60.69:9090/winr/model"
           name="modelFile"
           :on-success="handleSuccessMod"
@@ -28,7 +29,9 @@
         >
           <el-button size="small" type="primary">上传模型</el-button>
           <template #tip>
-            <div class="el-upload__tip">只能上传1个H5文件</div>
+            <div class="el-tip">请上传1个H5文件</div>
+            <div class="el-tip">激活函数目前只支持sigmoid</div>
+            <div class="el-tip">网络只支持“卷积层+全连接层”或“卷积层+池化层+全连接层”</div>
           </template>
         </el-upload>
       </el-form-item>
@@ -37,17 +40,29 @@
       </el-form-item>
       <el-form-item label="图片：">
         <el-upload
-          class="pic-upload"
+          ref="pic-upload"
           action="http://219.228.60.69:9090/winr/images"
           name="images"
           multiple
           :on-success="handleSuccessPic"
           :on-remove="handleRemovePic"
           :on-preview="handlePreviewPic"
+          :before-upload="beforeUploadPic"
           :file-list="picList"
           list-type="picture"
         >
           <el-button size="small" type="primary">上传图片</el-button>
+          <template #tip>
+            <div v-if="ParaPacket.dataset=='cifar10'" class="el-tip">
+              请上传尺寸为32×32的彩色JPG图片
+            </div>
+            <div v-else-if="ParaPacket.dataset=='fashion_mnist'" class="el-tip">
+              请上传尺寸为28×28的灰度JPG图片
+            </div>
+            <div v-else-if="ParaPacket.dataset=='gtsrb'" class="el-tip">
+              请上传尺寸为43×43的彩色JPG图片
+            </div>
+          </template>
         </el-upload>
       </el-form-item>
       <el-form-item label="图片标签：">
@@ -95,7 +110,7 @@
         || this.ParaPacket.model == ''
         || this.picNameTagTableData.length == 0"
       >
-        下一步
+        提交验证
       </el-button>
     </div>
   </div>
@@ -103,6 +118,8 @@
 
 <script>
 import labelOpt from '@/store/modules/labels.js'
+import * as img from 'mockjs'
+
 export default {
   name: 'Step1',
   data() {
@@ -147,7 +164,18 @@ export default {
         })
         return
       }
+      // get label from file name
       var tagPic = ''
+      var numPos = file.name.indexOf('label_') + 6
+      while (file.name.charAt(numPos) >= '0' && file.name.charAt(numPos) <= '9') {
+        tagPic = tagPic * 10 + parseInt(file.name.charAt(numPos))
+        numPos++
+      }
+      if ((this.ParaPacket.dataset == 'cifar10' && tagPic > this.cifar10LabelOpt.length - 1)
+        || (this.ParaPacket.dataset == 'fashion_mnist' && tagPic > this.fashion_mnistLabelOpt.length - 1)
+        || (this.ParaPacket.dataset == 'gtsrb' && tagPic > this.gtsrbLabelOpt.length - 1)) {
+        tagPic = ''
+      }
       // insert into picNameTag
       this.$set(
         this.picNameTagTableData,
@@ -170,9 +198,14 @@ export default {
         }
       }
       // delete in picNameTag
-      this.picNameTagTableData.splice(file.name, 1)
+      for (var i = 0; i < this.picNameTagTableData.length; i++) {
+        if (this.picNameTagTableData[i].name_user === file.name) {
+          this.picNameTagTableData.splice(i, 1)
+          break
+        }
+      }
       console.log(fileList)
-      console.log(this.ParaPacket)
+      console.log(this.picNameTagTableData)
       console.log('handleRemovePic end')
     },
     handlePreviewPic(file) {
@@ -180,6 +213,45 @@ export default {
       console.log('handlePreviewPic')
       console.log(file)
       console.log('handlePreviewPic end')
+    },
+    beforeUploadPic(file) {
+      // :before-upload="beforeUploadPic"
+      console.log('beforeUploadPic')
+      console.log(file)
+      // check format
+      if (file.type !== 'image/jpeg') {
+        this.$message.error('请上传JPG文件。')
+        return false
+      }
+      // check size
+      var picSideLength = 0
+      if (this.ParaPacket.dataset === 'cifar10') {
+        picSideLength = 32
+      } else if (this.ParaPacket.dataset === 'fashion_mnist') {
+        picSideLength = 28
+      } else if (this.ParaPacket.dataset === 'gtsrb') {
+        picSideLength = 43
+      }
+      console.log(picSideLength)
+      const isSize = new Promise(function(resolve, reject) {
+        let width = picSideLength
+        let height = picSideLength
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+        console.log(img)
+      }).then(() => {
+        return file
+      }, () => {
+        this.$message.error('图片尺寸应为' + picSideLength + ' x ' + picSideLength + '.')
+        return Promise.reject()
+      })
+      console.log('beforeUploadPic end')
+      return isSize
     },
     handleSuccessMod(response, file, fileList) {
       console.log('handleSuccessMod')
@@ -243,6 +315,16 @@ export default {
         }
       })
       console.log('handleExceedMod end')
+    },
+    datasetChange() {
+      console.log('dataset change')
+      // remove pictures in pic-list
+      this.$refs['pic-upload'].clearFiles()
+      // remove rows in picNameTagTableData
+      while (this.picNameTagTableData.length !== 0) {
+        this.picNameTagTableData.splice(this.picNameTagTableData.length - 1, 1)
+      }
+      console.log('dataset change end')
     },
     GetLabelOption() {
       if (this.ParaPacket.dataset !== '') {
@@ -345,5 +427,9 @@ export default {
 </script>
 
 <style scoped>
-
+.el-tip {
+  font-family: "微软雅黑";
+  font-size: 14px;
+  color: #929497;
+}
 </style>
