@@ -31,18 +31,18 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="验证ID" prop="verifyId" />
-      <el-table-column label="验证工具" prop="tool" />
-      <el-table-column label="开始时间" prop="startTime" :formatter="StartTimeFormat" />
-      <!--      <el-table-column label="开始时间2" prop="startTime"></el-table-column>-->
-      <el-table-column label="当前状态" prop="status" />
+      <el-table-column label="验证ID" prop="verifyId"></el-table-column>
+      <el-table-column label="验证工具" prop="tool"></el-table-column>
+      <el-table-column label="开始时间" prop="startTime" :formatter="StartTimeFormat"></el-table-column>
+<!--      <el-table-column label="开始时间-server" prop="startTime"></el-table-column>-->
+      <el-table-column label="当前状态" prop="status"></el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
         width="100"
       >
         <template #default="scope">
-          <el-button type="text" size="small" @click="checkResult(scope.row)">查看结果</el-button>
+          <el-button @click="checkResult(scope.row)" type="text" size="small">查看结果</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -58,9 +58,6 @@ export default {
     return {
       recordTableData: []
     }
-  },
-  mounted: function() {
-    this.GetRecord()
   },
   methods: {
     GetRecord() {
@@ -125,9 +122,11 @@ export default {
       if (date === undefined) {
         return ''
       }
-      // return moment(date).format('YYYY-MM-DD HH:mm:ss')
-      return moment(date).subtract(8, 'hours').format('YYYY-MM-DD HH:mm:ss')
+      return moment(date).format('YYYY-MM-DD HH:mm:ss');
     }
+  },
+  mounted: function() {
+    this.GetRecord()
   }
 }
 </script>
