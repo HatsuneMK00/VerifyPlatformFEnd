@@ -60,7 +60,7 @@
               请上传尺寸为28×28的灰度JPG图片
             </div>
             <div v-else-if="ParaPacket.dataset=='gtsrb'" class="el-tip">
-              请上传尺寸为43×43的彩色JPG图片
+              请上传尺寸为48×48的彩色JPG图片
             </div>
           </template>
         </el-upload>
@@ -118,7 +118,6 @@
 
 <script>
 import labelOpt from '@/store/modules/labels.js'
-import * as img from 'mockjs'
 
 export default {
   name: 'Step1',
@@ -190,13 +189,13 @@ export default {
     handleRemovePic(file, fileList) {
       console.log('handleRemovePic')
       console.log(file)
-      // delete in fileList
-      for (var i = 0; i < fileList.length; i++) {
-        if (file.name === fileList[i].name) {
-          fileList.splice(i, 1)
-          break
-        }
-      }
+      // delete in fileList, done auto
+      // for (var i = 0; i < fileList.length; i++) {
+      //   if (file.name === fileList[i].name) {
+      //     fileList.splice(i, 1)
+      //     break
+      //   }
+      // }
       // delete in picNameTag
       for (var i = 0; i < this.picNameTagTableData.length; i++) {
         if (this.picNameTagTableData[i].name_user === file.name) {
@@ -214,15 +213,39 @@ export default {
       console.log(file)
       console.log('handlePreviewPic end')
     },
-    beforeUploadPic(file) {
+    async beforeUploadPic(file) {
       // :before-upload="beforeUploadPic"
       console.log('beforeUploadPic')
       console.log(file)
-      // check format
-      if (file.type !== 'image/jpeg') {
-        this.$message.error('请上传JPG文件。')
-        return false
+      if (!this.checkPicFormat(file)) {
+        console.log('format error')
+        this.$message.error('请上传JPG图片。')
+        return Promise.reject()
       }
+      if (!await this.checkPicSize(file)) {
+        console.log('size error')
+        this.$message.error('请上传尺寸正确的图片。')
+        return Promise.reject()
+      }
+      if (!await this.checkPicColor(file)) {
+        console.log('color error')
+        this.$message.error('请上传颜色正确的图片。')
+        return Promise.reject()
+      }
+      console.log('beforeUploadPic end')
+      return Promise.resolve()
+    },
+    checkPicFormat(file) {
+      // check format
+      var isFormat = true
+      if (file.type !== 'image/jpeg') {
+        isFormat = false
+      }
+      console.log('isFormat')
+      console.log(isFormat)
+      return isFormat
+    },
+    async checkPicSize(file) {
       // check size
       var picSideLength = 0
       if (this.ParaPacket.dataset === 'cifar10') {
@@ -230,28 +253,83 @@ export default {
       } else if (this.ParaPacket.dataset === 'fashion_mnist') {
         picSideLength = 28
       } else if (this.ParaPacket.dataset === 'gtsrb') {
-        picSideLength = 43
+        picSideLength = 48
       }
-      console.log(picSideLength)
-      const isSize = new Promise(function(resolve, reject) {
+      var isSize = false
+      await new Promise(function(resolve, reject) {
         let width = picSideLength
         let height = picSideLength
         let _URL = window.URL || window.webkitURL
         let img = new Image()
+        let valid
+        img.src = _URL.createObjectURL(file)
         img.onload = function() {
-          let valid = img.width === width && img.height === height
+          valid = img.width === width && img.height === height
           valid ? resolve() : reject()
         }
-        img.src = _URL.createObjectURL(file)
-        console.log(img)
       }).then(() => {
+        console.log('size correct in promise')
+        isSize = true
         return file
-      }, () => {
-        this.$message.error('图片尺寸应为' + picSideLength + ' x ' + picSideLength + '.')
-        return Promise.reject()
+      }).catch(err => {
+        console.log('size error in promise')
+        isSize = false
       })
-      console.log('beforeUploadPic end')
+      console.log('isSize')
+      console.log(isSize)
       return isSize
+    },
+    async checkPicColor(file) {
+      // check color
+      var isColorful = false
+      var isColorCorrect = false
+      var ds = this.ParaPacket.dataset
+      var arr = new Uint8Array(300)
+      var ai = 0
+      await new Promise(async function(resolve, reject) {
+        var valid
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.src = _URL.createObjectURL(file)
+        img.onload = async function() {
+          var canvas = document.createElement('canvas')
+          canvas.width = img.width
+          canvas.height = img.height
+          var ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0)
+          var c = ctx.getImageData(0, 0, img.width, img.height)
+          console.log(c)
+          for (var i = 0; i < c.height; i++) {
+            for (var j = 0; j < c.width; j++) {
+              var x = (i * 4) * c.width + (j * 4)
+              var r = c.data[x]
+              var g = c.data[x + 1]
+              var b = c.data[x + 2]
+              if (r !== g || r !== b || g !== b) {
+                isColorful = true
+                break
+              }
+            }
+            if (isColorful) break
+          }
+          console.log('isColorful')
+          console.log(isColorful)
+          valid = (ds === 'fashion_mnist' && !isColorful)
+            || (ds === 'gtsrb' && isColorful)
+            || (ds === 'cifar10' && isColorful)
+          valid ? resolve() : reject()
+        }
+      }).then(() => {
+        console.log('color correct in promise')
+        isColorCorrect = true
+        return file
+      }).catch(err => {
+        console.log('color error in promise')
+        isColorCorrect = false
+      })
+      console.log('isColorCorrect')
+      console.log(isColorCorrect)
+      return isColorCorrect
     },
     handleSuccessMod(response, file, fileList) {
       console.log('handleSuccessMod')
