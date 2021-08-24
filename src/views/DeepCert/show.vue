@@ -23,6 +23,11 @@
         label="验证图片数量"
         class="td"
       />
+      <el-table-column
+        prop="times"
+        label="总耗时"
+        class="td"
+      />
     </el-table>
     <el-row v-for="obj in objs" :key="obj" type="flex" justify="center" :gutter="30">
       <el-col :span="24" class="el-col">
@@ -34,6 +39,7 @@
         <div class="text">
           <div class="robust_class">{{ obj.robust }}</div>
           <div class="robust_class">{{ obj.target_label }}</div>
+          <div class="robust_class">{{ obj.time }}</div>
         </div>
         <div class="card">
           <div class="title">
@@ -58,7 +64,8 @@ export default {
       tableData: [{
         model_name: '',
         number: '',
-        set: ''
+        set: '',
+        times: ''
       }]
     }
   },
@@ -88,14 +95,17 @@ export default {
               var temRobust = res.data.result[temp].robustness
               var tempModel = res.data.result[temp].model
               var tempTartge = res.data.result[temp].target_label
+              var tempTime = res.data.result[temp].compute_time
               this.tableData[0].model_name = tempModel.slice(7)
+              this.tableData[0].times += tempTime
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '最小扰动半径：' + temRobust,
                 lable: '标签：' + tempLable,
                 url1: tempUrl,
                 target_label: '最小对抗样本标签：' + tempTartge,
-                imge_class: 'image'
+                imge_class: 'image',
+                time: '验证耗时：' + tempTime
               })
             } else {
               // eslint-disable-next-line no-redeclare
@@ -161,19 +171,19 @@ export default {
 
 }
 .el-col{
-  position: relative;
   height: 400px;
   border-bottom: rgba(0,0,0,0.2) 1px solid;
   border-top: rgba(0,0,0,0.2) 1px solid;
 }
 .card{
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-  display: inline-block;
-  position: relative;
-  top: 8%;
-  width: 400px;
+  float: left;
+  width: 30%;
   height: 336px;
   margin-left: 93px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-top: 27px;
   span{
     font-size: 20px;
     display: inline-block;
@@ -184,9 +194,13 @@ export default {
     text-align: center;
   }
   img{
+    font-size: 20px;
+    display: inline-block;
     position: relative;
-    left: 75px;
-    width: 250px;
+    width: 90%;
+    margin: 0px 5%;
+    text-align: center;
+    position: relative;
     border: none;
     height: 250px;
   }
@@ -202,23 +216,28 @@ export default {
 
 }
 .text{
-  display: inline-block;
-  position: relative;
-  top: -22%;
+  float: left;
+  height: 250px;
+  padding: 20px;
+  margin-top: 60px;
+  margin: 0 auto;
   width: 30%;
   height: 250px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-top: 60px;
 }
 .des{
+  float: left;
   margin: 0 auto;
-  display: inline-block;
-  position: relative;
   width: 30%;
   height: 250px;
-  left: 7%;
-  top: -27%;
   font-size: 20px;
   font-weight: 500;
+  text-align: center;
   letter-spacing: 3px;
+  line-height: 250px;
+  margin-top: 60px;
 }
 .robust_class{
   font-size: 18px;
