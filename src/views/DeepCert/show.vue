@@ -34,12 +34,10 @@
         <div class="des">
           <div class="title">
             测试样本{{ obj.id }}
+            <div>
+              <span style="color: #909399 ;font-size: 15px;">验证耗时: {{ obj.time }}s</span>
+            </div>
           </div>
-        </div>
-        <div class="text">
-          <div class="robust_class">{{ obj.robust }}</div>
-          <div class="robust_class">{{ obj.target_label }}</div>
-          <div class="robust_class">{{ obj.time }}</div>
         </div>
         <div class="card">
           <div class="title">
@@ -47,6 +45,17 @@
           </div>
           <img :src="obj.url1">
           <span class="label_class">{{ obj.lable }}</span>
+        </div>
+        <div :class="obj.text_class">
+          <div class="robust_class">{{ obj.robust }}</div>
+          <div class="robust_class">{{ obj.target_label }}</div>
+        </div>
+        <div :class="obj.img_class">
+          <div class="title">
+            <span class="title">无对抗样本</span>
+          </div>
+          <img src="@/assets/wrong.png">
+          <div class="label_class">{{ obj.target_label }}</div>
         </div>
       </el-col>
     </el-row>
@@ -104,21 +113,25 @@ export default {
                 lable: '标签：' + tempLable,
                 url1: tempUrl,
                 target_label: '最小对抗样本标签：' + tempTartge,
-                imge_class: 'image',
-                time: '验证耗时：' + tempTime
+                time: tempTime,
+                img_class: 'img2un',
+                text_class: 'text'
               })
             } else {
               // eslint-disable-next-line no-redeclare
               var tempUrl = 'http://219.228.60.69:9090/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
               // eslint-disable-next-line no-redeclare
               var tempTartge = '该图片神经网络未正确分类，不进行鲁棒性验证'
+              // eslint-disable-next-line no-unused-vars
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '',
                 lable: '标签：分类错误',
                 url1: tempUrl,
                 target_label: tempTartge,
-                imge_class: 'image1'
+                time: '0',
+                img_class: 'img2',
+                text_class: 'textun'
               })
             }
           }
@@ -197,12 +210,13 @@ export default {
     font-size: 20px;
     display: inline-block;
     position: relative;
-    width: 90%;
+    width: 70%;
     margin: 0px 5%;
     text-align: center;
     position: relative;
     border: none;
     height: 250px;
+    padding: 46px;
   }
   .label_class{
     font-size: 18px;
@@ -216,6 +230,7 @@ export default {
 
 }
 .text{
+  display: block;
   float: left;
   height: 250px;
   padding: 20px;
@@ -225,19 +240,120 @@ export default {
   height: 250px;
   text-align: center;
   letter-spacing: 3px;
+  margin-top: 120px;
+}
+.textun{
+  display: none;
+  float: left;
+  height: 250px;
+  padding: 20px;
   margin-top: 60px;
+  margin: 0 auto;
+  width: 30%;
+  height: 250px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-top: 120px;
+}
+.img2{
+  display: block;
+  float: left;
+  height: 250px;
+  padding: 20px;
+  margin-top: 60px;
+  margin: 0 auto;
+  width: 30%;
+  height: 336px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-top: 7px;
+  img{
+    font-size: 20px;
+    display: inline-block;
+    position: relative;
+    width: 70%;
+    margin: 0px 5%;
+    text-align: center;
+    position: relative;
+    border: none;
+    height: 250px;
+    padding: 46px;
+  }
+  span{
+    font-size: 20px;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin: 9px 0px;
+    text-align: center;
+  }
+  .label_class{
+    font-size: 18px;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin: 9px 0px;
+    text-align: center;
+  }
+}
+.img2un{
+  display: none;
+  float: left;
+  height: 250px;
+  padding: 20px;
+  margin-top: 60px;
+  margin: 0 auto;
+  width: 30%;
+  height: 336px;
+  text-align: center;
+  letter-spacing: 3px;
+  margin-top: 7px;
+  img{
+    font-size: 20px;
+    display: inline-block;
+    position: relative;
+    width: 70%;
+    margin: 0px 5%;
+    text-align: center;
+    position: relative;
+    border: none;
+    height: 250px;
+  }
+  span{
+    font-size: 20px;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin: 9px 0px;
+    text-align: center;
+  }
+  .label_class{
+    font-size: 18px;
+    display: inline-block;
+    position: relative;
+    height: 20px;
+    width: 100%;
+    margin: 9px 0px;
+    text-align: center;
+  }
 }
 .des{
   float: left;
   margin: 0 auto;
   width: 30%;
-  height: 250px;
-  font-size: 20px;
-  font-weight: 500;
   text-align: center;
-  letter-spacing: 3px;
-  line-height: 250px;
   margin-top: 60px;
+  vertical-align: middle;
+  .title{
+
+    padding: 100px;
+    height: 250px;
+    font-size: 23px;
+    letter-spacing: 3px;
+  }
 }
 .robust_class{
   font-size: 18px;
