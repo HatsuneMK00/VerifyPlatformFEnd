@@ -216,6 +216,7 @@ export default {
     position: relative;
     border: none;
     height: 250px;
+    padding: 46px;
   }
   .label_class{
     font-size: 18px;
@@ -276,6 +277,7 @@ export default {
     position: relative;
     border: none;
     height: 250px;
+    padding: 46px;
   }
   span{
     font-size: 20px;
