@@ -80,6 +80,9 @@
           <div v-else-if="image.misclassified === 'True'" class="img_box">
             <img src="@/assets/wrong.png" class="logo_img">
           </div>
+          <div v-else-if="image.unknown === 'True'" class="img_box">
+            <img src="@/assets/question.png" class="logo_img">
+          </div>
           <div v-else>
             <img :src="image.advExamples" class="image">
           </div>
@@ -88,6 +91,9 @@
           </div>
           <div v-else-if="image.misclassified === 'True'" class="description">
             <span>该图片神经网络未正确分类，不进行鲁棒性验证</span>
+          </div>
+          <div v-else-if="image.unknown === 'True'" class="description">
+            <span>该图片在当前验证时间内无法判断鲁棒性</span>
           </div>
           <div v-else class="description">
             <span>标签: {{ image.advLabel }}</span>
