@@ -95,6 +95,7 @@ export default {
         if (res.status === 200) {
           // eslint-disable-next-line no-unused-vars
           var count = 0
+          var tatoltime = 0
           for (var temp in res.data.result) {
             count++
             if (res.data.result[temp].robustness !== undefined) {
@@ -106,7 +107,8 @@ export default {
               var tempTartge = res.data.result[temp].target_label
               var tempTime = res.data.result[temp].compute_time
               this.tableData[0].model_name = tempModel.slice(7)
-              this.tableData[0].times += tempTime
+              var time = parseFloat(tempTime)
+              tatoltime += time
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '最小扰动半径：' + temRobust,
@@ -137,6 +139,7 @@ export default {
           }
           console.log(this.objs)
           this.tableData[0].number = count
+          this.tableData[0].times = tatoltime
           // eslint-disable-next-line no-unused-vars
           var arr = this.tableData[0].model_name.split('_')
           this.tableData[0].set = arr[0]
@@ -193,7 +196,7 @@ export default {
   float: left;
   width: 30%;
   height: 336px;
-  margin-left: 93px;
+  margin-left: 61px;
   text-align: center;
   letter-spacing: 3px;
   margin-top: 27px;
@@ -203,7 +206,7 @@ export default {
     position: relative;
     height: 20px;
     width: 100%;
-    margin: 9px 0px;
+    margin: 12px 0px;
     text-align: center;
   }
   img{
@@ -216,7 +219,7 @@ export default {
     position: relative;
     border: none;
     height: 250px;
-    padding: 46px;
+    padding: 22px;
   }
   .label_class{
     font-size: 18px;
@@ -348,7 +351,6 @@ export default {
   margin-top: 60px;
   vertical-align: middle;
   .title{
-
     padding: 100px;
     height: 250px;
     font-size: 23px;
