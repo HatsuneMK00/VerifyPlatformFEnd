@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="greeting-text">您好，{{ name }}。</div>
-    <div class="title1">针对自动驾驶的神经网络验证平台</div>
+    <div class="title1">面向自动驾驶的神经网络验证平台</div>
     <div class="subtitle1">华东师范大学 可信智能软件实验室</div>
     <div class="title2">简介</div>
     <div align="center">
