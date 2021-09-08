@@ -63,6 +63,8 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import labelOpt from '@/store/modules/labels.js'
 import { get } from './indexByQzt'
 export default {
   name: 'Show',
@@ -74,8 +76,9 @@ export default {
         model_name: '',
         number: '',
         set: '',
-        times: 0
-      }]
+        times: ''
+      }],
+      labels: {}
     }
   },
   mounted() {
@@ -85,7 +88,7 @@ export default {
     getDatefrom() {
       this.verifyId = this.$route.query.verifyId
       // this.verifyId = 'e00187d86f6548288c8fda84779f8314'
-      // this.verifyId = '563d4a42670045ed8dd0212f0c60c091'
+      // this.verifyId = 'asdfqeruhasdfjh1387123'
       const params = new URLSearchParams()
       params.append('verifyId', this.verifyId)
       const verifyDeepCert = (params) =>
@@ -94,7 +97,9 @@ export default {
         console.log(res)
         if (res.status === 200) {
           // eslint-disable-next-line no-unused-vars
+          this.labels = require('./labels').Labels.labels
           var count = 0
+          var tatoltime = 0
           for (var temp in res.data.result) {
             count++
             if (res.data.result[temp].robustness !== undefined) {
@@ -106,13 +111,21 @@ export default {
               var tempTartge = res.data.result[temp].target_label
               var tempTime = res.data.result[temp].compute_time
               this.tableData[0].model_name = tempModel.slice(7)
-              this.tableData[0].times += parseFloat(tempTime)
+              var arr = this.tableData[0].model_name.split('_')
+              console.log(tempLable)
+              console.log(this.tableData[0].model_name)
+              var tempLable1 = this.labels[arr[0]][tempLable]
+              var tempTartge1 = this.labels[arr[0]][tempTartge]
+              console.log(tempTartge)
+              console.log(tempLable1)
+              var time = parseFloat(tempTime)
+              tatoltime += time
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '最小扰动半径：' + temRobust,
-                lable: '标签：' + tempLable,
+                lable: '标签：' + tempLable1,
                 url1: tempUrl,
-                target_label: '最小对抗样本标签：' + tempTartge,
+                target_label: '最小对抗样本标签：' + tempTartge1,
                 time: tempTime,
                 img_class: 'img2un',
                 text_class: 'text'
@@ -137,8 +150,8 @@ export default {
           }
           console.log(this.objs)
           this.tableData[0].number = count
+          this.tableData[0].times = tatoltime
           // eslint-disable-next-line no-unused-vars
-          var arr = this.tableData[0].model_name.split('_')
           this.tableData[0].set = arr[0]
         } else {
           alert(res.data.verificationStatus)
@@ -193,7 +206,7 @@ export default {
   float: left;
   width: 30%;
   height: 336px;
-  margin-left: 93px;
+  margin-left: 61px;
   text-align: center;
   letter-spacing: 3px;
   margin-top: 27px;
@@ -203,7 +216,7 @@ export default {
     position: relative;
     height: 20px;
     width: 100%;
-    margin: 9px 0px;
+    margin: 12px 0px;
     text-align: center;
   }
   img{
@@ -216,7 +229,7 @@ export default {
     position: relative;
     border: none;
     height: 250px;
-    padding: 46px;
+    padding: 22px;
   }
   .label_class{
     font-size: 18px;
@@ -348,7 +361,6 @@ export default {
   margin-top: 60px;
   vertical-align: middle;
   .title{
-
     padding: 100px;
     height: 250px;
     font-size: 23px;
