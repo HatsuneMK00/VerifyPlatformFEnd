@@ -49,7 +49,7 @@
     <!--    <div class="title2">参考资料</div>-->
     <!--    <div class="introduction">阿巴阿巴阿巴aaabbb</div>-->
     <div class="title2">联系我们</div>
-    <div class="introduction">欢迎对我们的平台提出意见或建议，可以通过邮箱123456@ecnu.edu.cn联系我们。</div>
+    <div class="introduction">欢迎对我们的平台提出意见或建议，可以通过邮箱10175101106@stu.ecnu.edu.cn联系我们。</div>
   </div>
 </template>
 
