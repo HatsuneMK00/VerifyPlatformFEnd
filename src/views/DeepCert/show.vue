@@ -74,7 +74,7 @@ export default {
         model_name: '',
         number: '',
         set: '',
-        times: ''
+        times: 0
       }]
     }
   },
@@ -106,7 +106,7 @@ export default {
               var tempTartge = res.data.result[temp].target_label
               var tempTime = res.data.result[temp].compute_time
               this.tableData[0].model_name = tempModel.slice(7)
-              this.tableData[0].times += tempTime
+              this.tableData[0].times += parseFloat(tempTime)
               this.objs.push({
                 id: parseInt(temp) + 1,
                 robust: '最小扰动半径：' + temRobust,

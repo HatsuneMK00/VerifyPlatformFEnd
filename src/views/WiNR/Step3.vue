@@ -71,6 +71,9 @@
             <span style="font-size: 20px; font-weight: 500"> epsilon = {{ image.eps }} </span>
             <span class="title_thin">时的对抗样本</span>
           </div>
+          <div v-else-if="image.unknown === 'True'" class="description">
+            <span class="title">无法判断鲁棒性</span>
+          </div>
           <div v-else class="description">
             <span class="title">无对抗样本</span>
           </div>

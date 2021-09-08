@@ -113,6 +113,11 @@
         提交验证
       </el-button>
     </div>
+    <div align="center">
+      <el-button type="text">
+        <a href="/pdf/WiNR工具使用说明.pdf">使用说明文档</a>
+      </el-button>
+    </div>
   </div>
 </template>
 
