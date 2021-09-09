@@ -223,7 +223,7 @@ export default {
     font-size: 20px;
     display: inline-block;
     position: relative;
-    width: 70%;
+    width: 250px;
     margin: 0px 5%;
     text-align: center;
     position: relative;
@@ -284,7 +284,7 @@ export default {
     font-size: 20px;
     display: inline-block;
     position: relative;
-    width: 70%;
+    width: 250px;
     margin: 0px 5%;
     text-align: center;
     position: relative;
@@ -327,7 +327,7 @@ export default {
     font-size: 20px;
     display: inline-block;
     position: relative;
-    width: 70%;
+    width: 250px;
     margin: 0px 5%;
     text-align: center;
     position: relative;
