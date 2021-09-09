@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard-container">
     <div class="greeting-text">您好，{{ name }}。</div>
-    <div class="title1">针对自动驾驶的神经网络验证平台</div>
-    <div class="subtitle1">华东师范大学 可信智能软件实验室</div>
+    <div class="title1">面向自动驾驶的神经网络验证平台</div>
+<!--    <div class="subtitle1">华东师范大学 可信智能软件实验室</div>-->
     <div class="title2">简介</div>
     <div align="center">
       <img class="toolkit_frame" style="height: 152px; width: 283px;"
@@ -48,8 +48,8 @@
     <!--    <div class="introduction">阿巴阿巴阿巴aaabbb</div>-->
     <!--    <div class="title2">参考资料</div>-->
     <!--    <div class="introduction">阿巴阿巴阿巴aaabbb</div>-->
-    <div class="title2">联系我们</div>
-    <div class="introduction">欢迎对我们的平台提出意见或建议，可以通过邮箱123456@ecnu.edu.cn联系我们。</div>
+<!--    <div class="title2">联系我们</div>-->
+<!--    <div class="introduction">欢迎对我们的平台提出意见或建议，可以通过邮箱10175101106@stu.ecnu.edu.cn联系我们。</div>-->
   </div>
 </template>
 

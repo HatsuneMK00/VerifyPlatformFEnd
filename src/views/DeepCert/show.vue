@@ -263,7 +263,6 @@ export default {
   margin-top: 60px;
   margin: 0 auto;
   width: 30%;
-  height: 250px;
   text-align: center;
   letter-spacing: 3px;
   margin-top: 120px;

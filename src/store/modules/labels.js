@@ -1,7 +1,7 @@
 /*
-* Labels of Dataset cifar10, fashion_mnist, gtsrb in Chinese
-* ZZW 2021.8.5 14:11
-* */
+ * Labels of Dataset cifar10, fashion_mnist, gtsrb in Chinese
+ * ZZW 2021.8.5 14:11
+ * */
 const cifar10LabelOpt = [
   { label: '飞机', value: 0 },
   { label: '摩托车', value: 1 },
@@ -83,9 +83,22 @@ const numberPicLabelOpt = [
   { label: '8', value: 8 },
   { label: '9', value: 9 }
 ]
+const cifarPicLabelOpt = [
+  { value: 0, label: "airplane" },
+  { value: 1, label: "automobile" },
+  { value: 2, label: "bird" },
+  { value: 3, label: "cat" },
+  { value: 4, label: "deer" },
+  { value: 5, label: "dog" },
+  { value: 6, label: "frog" },
+  { value: 7, label: "horse" },
+  { value: 8, label: "ship" },
+  { value: 9, label: "truck" }
+];
 export default {
   cifar10LabelOpt,
   fashion_mnistLabelOpt,
   gtsrbLabelOpt,
-  numberPicLabelOpt
-}
+  numberPicLabelOpt,
+  cifarPicLabelOpt
+};

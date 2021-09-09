@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: '面向自动驾驶的神经网络验证平台',
 
   /**
    * @type {boolean} true | false
