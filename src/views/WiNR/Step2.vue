@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <h3 align="center">WiNR 工具</h3>
+    <h3 align="center">WiNR</h3>
     <el-steps :active="1" align-center finish-status="success">
       <el-step title="参数选择"></el-step>
       <el-step title="开始验证"></el-step>
