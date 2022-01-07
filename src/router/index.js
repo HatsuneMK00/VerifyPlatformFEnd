@@ -43,86 +43,43 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/dashboard',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: '首页',
-        component: () => import('@/views/dashboard/index'),
-        meta: { title: '首页', icon: 'el-icon-house' }
-      }
-    ]
+    path: '/dashboard/index',
+    component: () => import('@/views/dashboard/index')
   },
   {
-    path: '/WiNR',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'WiNR',
-        component: () => import('@/views/WiNR/index'),
-        meta: { title: 'WiNR', icon: 'table' }
-      },
-      {
-        path: 'step1',
-        name: 'WiNR_step1',
-        component: () => import('@/views/WiNR/Step1'),
-        meta: { title: '选择参数', icon: 'table' },
-        hidden: true
-      },
-      {
-        path: 'step2',
-        name: 'WiNR_step2',
-        component: () => import('@/views/WiNR/Step2'),
-        meta: { title: '开始验证', icon: 'table' },
-        hidden: true
-      },
-      {
-        path: 'step3',
-        name: 'WiNR_step3',
-        component: () => import('@/views/WiNR/Step3'),
-        meta: { title: '查看结果', icon: 'table' },
-        hidden: true
-      }
-    ]
+    path: '/WiNR/step1',
+    component: () => import('@/views/WiNR/Step1')
+  },
+  {
+    path: '/WiNR/step2',
+    component: () => import('@/views/WiNR/Step2')
+  },
+  {
+    path: '/WiNR/step3',
+    component: () => import('@/views/WiNR/Step3')
+  },
+  {
+    path: '/WiNR/index',
+    component: () => import('@/views/WiNR/index')
   },
 
   {
-    path: '/DeepCert',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'DeepCert',
-        component: () => import('@/views/DeepCert/index'),
-        meta: { title: 'DeepCert', icon: 'table' }
-      },
-      {
-        path: 'show',
-        name: 'Show',
-        component: () => import('@/views/DeepCert/show'),
-        meta: { title: 'Show', icon: 'table' },
-        hidden: true
-      }
-    ]
+    path: '/DeepCert/index',
+    component: () => import('@/views/DeepCert/index')
   },
+  {
+    path: '/DeepCert/show',
+    component: () => import('@/views/DeepCert/show')
+  },
+
   {
     path: '/',
     component: Layout,
     redirect: '/dashboard/index'
   },
   {
-    path: '/history',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'History',
-        component: () => import('@/views/history/index'),
-        meta: { title: '历史记录', icon: 'form' }
-      }
-    ]
+    path: '/history/index',
+    component: () => import('@/views/history/index')
   },
 
   // 404 page must be placed at the end !!!
