@@ -20,31 +20,25 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
-  if (hasToken) {
-    if (to.path === '/login') {
-      // if is logged in, redirect to the home page
-      next({ path: '/' })
-      NProgress.done()
+  if (true) {
+    const hasGetUserInfo = store.getters.name
+    if (hasGetUserInfo) {
+      next()
     } else {
-      const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
-        next()
-      } else {
-        try {
-          // get user info
-          await store.dispatch('user/getInfo')
-          let userId = store.getters.userId
-          console.log("userId is from permission.js: " + userId)
-          await store.dispatch('websocket/WEBSOCKET_INIT', 'ws://219.228.60.69:9090/notification?id=' + userId);
+      try {
+        // fix userId and userName for preview version
+        // todo note the userId is fixed to 31511 and userName is fixed to platform by backend
+        await store.dispatch('user/getInfo')
+        let userId = store.getters.userId
+        await store.dispatch('websocket/WEBSOCKET_INIT', 'ws://219.228.60.69:9090/notification?id=' + userId);
 
-          next()
-        } catch (error) {
-          // remove token and go to login page to re-login
-          await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
-          next(`/login?redirect=${to.path}`)
-          NProgress.done()
-        }
+        next()
+      } catch (error) {
+        // remove token and go to login page to re-login
+        await store.dispatch('user/resetToken')
+        Message.error(error || 'Has Error')
+        next(false)
+        NProgress.done()
       }
     }
   } else {
