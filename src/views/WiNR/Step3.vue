@@ -181,7 +181,7 @@ export default {
           imageKey = 'image_' + tempUrl.slice(-4, -3)[0][0]
           tempOrigin[imageKey] = {
             originLabel: this.labels[tempUrl[0]][tempUrl.slice(-1)[0][0]],
-            originImages: 'http://219.228.60.69:9090/winr/origin-image/' + res.data.originImages[i] + '?verifyId=' + this.verifyId
+            originImages: 'http://219.228.60.69:9091/winr/origin-image/' + res.data.originImages[i] + '?verifyId=' + this.verifyId
           }
         }
         var tempAdv = {}
