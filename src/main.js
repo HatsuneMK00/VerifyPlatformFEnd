@@ -42,7 +42,7 @@ import qs from 'qs'
 
 Vue.prototype.$axios = axios.create(
   {
-    baseURL: 'http://219.228.60.69:9090',
+    baseURL: 'http://219.228.60.69:9091',
     transformRequest: [
       data => qs.stringify(data)
     ]

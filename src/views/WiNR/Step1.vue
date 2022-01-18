@@ -18,7 +18,7 @@
       <el-form-item label="网络模型：">
         <el-upload
           ref="model-upload"
-          action="http://219.228.60.69:9090/winr/model"
+          action="http://219.228.60.69:9091/winr/model"
           name="modelFile"
           :on-success="handleSuccessMod"
           :on-preview="handlePreviewMod"
@@ -41,7 +41,7 @@
       <el-form-item label="图片：">
         <el-upload
           ref="pic-upload"
-          action="http://219.228.60.69:9090/winr/images"
+          action="http://219.228.60.69:9091/winr/images"
           name="images"
           multiple
           :on-success="handleSuccessPic"

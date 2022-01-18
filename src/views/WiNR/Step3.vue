@@ -190,7 +190,7 @@ export default {
           imageKey = 'image_' + tempUrl.slice(-4, -3)[0][0]
           tempAdv[imageKey] = {
             advLabel: this.labels[tempUrl[0]][tempUrl.slice(-1)[0][0]],
-            advExamples: 'http://219.228.60.69:9090/winr/adv_image/' + res.data.advExamples[i] + '?verifyId=' + this.verifyId,
+            advExamples: 'http://219.228.60.69:9091/winr/adv_image/' + res.data.advExamples[i] + '?verifyId=' + this.verifyId,
             eps: tempUrl.slice(-9, -8)[0]
           }
         }
