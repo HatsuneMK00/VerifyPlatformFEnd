@@ -75,7 +75,14 @@ export const constantRoutes = [
     path: '/history/index',
     component: () => import('@/views/history/index')
   },
-
+  {
+    path: '/history/winr',
+    component: () => import('@/views/history/winr')
+  },
+  {
+    path: '/history/deepcert',
+    component: () => import('@/views/history/deepcert')
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
