@@ -9,9 +9,7 @@
     <el-form ref="ParaPack" :model="ParaPacket" class="register-container" label-width="200px">
       <el-form-item label="数据集：">
         <el-select v-model="ParaPacket.dataset" placeholder="请选择数据集" @change="datasetChange">
-          <el-option label="cifar10" value="cifar10"></el-option>
-          <el-option label="fashion_mnist" value="fashion_mnist"></el-option>
-          <el-option label="gtsrb" value="gtsrb"></el-option>
+          <el-option v-for="item in datasetList" :key="item.name" :label="item.value" :value="item.value" />
         </el-select>
         <div class="el-tip">注意：更换数据集会使已上传的图片作废</div>
       </el-form-item>
@@ -123,12 +121,14 @@
 
 <script>
 import labelOpt from '@/store/modules/labels.js'
+import axios from "axios";
 
 export default {
   name: 'Step1',
   data() {
     return {
       picPostURL: this.$axios.baseURL + '/winr/images',
+      datasetList: [],
       picList: [],
       modelList: [],
       // the table of the user model name and the server model name
@@ -499,12 +499,33 @@ export default {
       } else {
         this.to_index()
       }
+    },
+    created: function() {
+      axios.get("https://datlab.zeabur.app/datasets")
+        .then((res) => {
+          let list = res.data.results
+          this.datasetList = list.filter((item) => {
+            return String(item.name).startsWith("WiNR")
+          })
+        })
+        .catch((err) => {
+          this.datasetList = [
+            {
+              name: "WiNR-cifar10",
+              value: "cifar10"
+            },
+            {
+              name: "WiNR-fashion_mnist",
+              value: "fashion_mnist"
+            },
+            {
+              name: "WiNR-gtsrb",
+              value: "gtsrb"
+            }
+          ]
+          console.log(err)
+        })
     }
-    // created: function() {
-    //   this.cifar10LabelOpt = require('./labels').cifar10LabelOpt
-    //   this.fashion_mnistLabelOpt = require('./labels').fashion_mnistLabelOpt
-    //   this.gtsrbLabelOpt = require('./labels').gtsrbLabelOpt
-    // }
   }
 }
 </script>

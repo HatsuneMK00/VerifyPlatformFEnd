@@ -30,8 +30,7 @@
           <el-form :model="ruleForm" ref="ruleFrom" label-width="200px">
             <el-form-item label="数据集：" align="left">
               <el-select v-model="dataset" placeholder="请选择数据集">
-                <el-option label="cifar" value="cifar"></el-option>
-                <el-option label="mnist" value="mnist"></el-option>
+                <el-option v-for="item in datasetList" :key="item.name" :label="item.value" :value="item.value" />
               </el-select>
             </el-form-item>
 
@@ -95,7 +94,7 @@
             </el-form-item>
 
             <el-form-item label="图片标签：" align="left">
-              <div v-if="dataset == ''">请先选择数据集</div>
+              <div v-if="dataset === ''">请先选择数据集</div>
               <div v-else>
                 <el-form>
                   <!-- eslint-disable -->
@@ -105,14 +104,14 @@
                   >
                     <el-select v-model="picItem.tag" placeholder="请选择标签">
                         <el-option
-                          v-if="dataset == 'cifar'"
+                          v-if="dataset === 'cifar'"
                           v-for="opt2 in cifarPicLabelOpt"
                           :value="opt2.value"
                           :label="opt2.label"
                         >
                         </el-option>
                         <el-option
-                          v-else-if="dataset == 'mnist'"
+                          v-else-if="dataset === 'mnist'"
                           v-for="opt1 in numberPicLabelOpt"
                           :label="opt1.label"
                           :value="opt1.value"
@@ -160,6 +159,8 @@
 /* eslint-disable */
 import { get, post } from "./indexByQzt";
 import labelOpt from "@/store/modules/labels.js";
+import axios from "axios";
+import {string} from "mockjs/src/mock/random/basic";
 export default {
   data() {
     return {
@@ -175,6 +176,7 @@ export default {
       str: "{",
       picTable: [],
       dataset: "",
+      datasetList: [],
       ruleForm: {
         verifyId: "",
         netName: "",
@@ -188,6 +190,24 @@ export default {
   methods: {
     show() {
       this.isDisplay = true;
+      axios.get("https://datlab.zeabur.app/datasets")
+        .then(res => {
+          let list = res.data.results;
+          this.datasetList = list.filter(item => String(item.name).startsWith("DeepCert"));
+        })
+        .catch(err => {
+          this.datasetList = [
+            {
+              name: "DeepCert-cifar",
+              value: "cifar"
+            },
+            {
+              name: "DeepCert-mnist",
+              value: "mnist"
+            }
+          ];
+          console.log("Get dataset error" + err);
+        });
     },
     notify(title, type) {
       this.$notify({
@@ -399,7 +419,7 @@ export default {
 <style lang="scss" scoped>
 .warp {
   width: 80%;
-  margin: 0 atuo;
+  margin: 0 auto;
   overflow: visible;
 }
 .introduction {
