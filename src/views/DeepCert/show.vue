@@ -104,7 +104,7 @@ export default {
             count++
             if (res.data.result[temp].robustness !== undefined) {
               console.log(res.data.result[temp])
-              var tempUrl = 'http://219.228.60.69:9091/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
+              var tempUrl = 'http://59.78.194.23:9091/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
               var tempLable = res.data.result[temp].true_label
               var temRobust = res.data.result[temp].robustness
               var tempModel = res.data.result[temp].model
@@ -132,7 +132,7 @@ export default {
               })
             } else {
               // eslint-disable-next-line no-redeclare
-              var tempUrl = 'http://219.228.60.69:9091/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
+              var tempUrl = 'http://59.78.194.23:9091/deepcert/origin-image/' + res.data.result[temp].path + '?verifyId=' + this.verifyId
               // eslint-disable-next-line no-redeclare
               var tempTartge = '该图片神经网络未正确分类，不进行鲁棒性验证'
               // eslint-disable-next-line no-unused-vars

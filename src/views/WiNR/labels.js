@@ -77,7 +77,7 @@ module.exports = { Labels }
 //   {
 //     imageId: 0,
 //     misclassified: 'True',
-//     originImages: 'http://219.228.60.69:9090/winr/origin-image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_original_image_1_original_label_2.png?verifyId=uwery134r132',
+//     originImages: 'http://59.78.194.23:9090/winr/origin-image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_original_image_1_original_label_2.png?verifyId=uwery134r132',
 //     originLabel: 'Pullover',
 //     robust: 'False',
 //     time_sum: '1.2616791725158691',
@@ -85,12 +85,12 @@ module.exports = { Labels }
 //     unrobust: 'False'
 //   },
 //   {
-//     advExamples: 'http://219.228.60.69:9090/winr/adv_image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_adv_image_0_adv_label_7.png?verifyId=uwery134r132',
+//     advExamples: 'http://59.78.194.23:9090/winr/adv_image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_adv_image_0_adv_label_7.png?verifyId=uwery134r132',
 //     advLabel: 'Sneaker',
 //     eps: '0.02',
 //     imageId: 1,
 //     misclassified: 'False',
-//     originImages: 'http://219.228.60.69:9090/winr/origin-image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_original_image_0_original_label_9.png?verifyId=uwery134r132',
+//     originImages: 'http://59.78.194.23:9090/winr/origin-image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_original_image_0_original_label_9.png?verifyId=uwery134r132',
 //     originLabel: 'Ankle boot',
 //     robust: 'False',
 //     time_sum: '0.25118112564086914',
@@ -100,7 +100,7 @@ module.exports = { Labels }
 //   {
 //     imageId: 2,
 //     misclassified: 'False',
-//     originImages: 'http://219.228.60.69:9090/winr/origin-image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_original_image_1_original_label_2.png?verifyId=uwery134r132',
+//     originImages: 'http://59.78.194.23:9090/winr/origin-image/fashion_mnist_cnn_4layer_5_3_sigmoid_myself_0.02_20210801_133754_original_image_1_original_label_2.png?verifyId=uwery134r132',
 //     originLabel: 'Pullover',
 //     robust: 'True',
 //     time_sum: '1.2616791725158691',

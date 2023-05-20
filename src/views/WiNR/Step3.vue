@@ -181,7 +181,7 @@ export default {
           imageKey = 'image_' + tempUrl.slice(-4, -3)[0][0]
           tempOrigin[imageKey] = {
             originLabel: this.labels[tempUrl[0]][tempUrl.slice(-1)[0][0]],
-            originImages: 'http://219.228.60.69:9091/winr/origin-image/' + res.data.originImages[i] + '?verifyId=' + this.verifyId
+            originImages: 'http://59.78.194.23:9091/winr/origin-image/' + res.data.originImages[i] + '?verifyId=' + this.verifyId
           }
         }
         var tempAdv = {}
@@ -190,7 +190,7 @@ export default {
           imageKey = 'image_' + tempUrl.slice(-4, -3)[0][0]
           tempAdv[imageKey] = {
             advLabel: this.labels[tempUrl[0]][tempUrl.slice(-1)[0][0]],
-            advExamples: 'http://219.228.60.69:9091/winr/adv_image/' + res.data.advExamples[i] + '?verifyId=' + this.verifyId,
+            advExamples: 'http://59.78.194.23:9091/winr/adv_image/' + res.data.advExamples[i] + '?verifyId=' + this.verifyId,
             eps: tempUrl.slice(-9, -8)[0]
           }
         }

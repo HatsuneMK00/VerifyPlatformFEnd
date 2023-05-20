@@ -6,7 +6,7 @@ axios.defaults.withCredentials = false
 // Content-Type 响应头
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
 // 基础url
-axios.defaults.baseURL = 'http://219.228.60.69:9091'
+axios.defaults.baseURL = 'http://59.78.194.23:9091'
 
 /**
  * 封装get方法

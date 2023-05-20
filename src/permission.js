@@ -30,7 +30,7 @@ router.beforeEach(async(to, from, next) => {
         // todo note the userId is fixed to 31511 and userName is fixed to platform by backend
         await store.dispatch('user/getInfo')
         let userId = store.getters.userId
-        await store.dispatch('websocket/WEBSOCKET_INIT', 'ws://219.228.60.69:9091/notification?id=' + userId);
+        await store.dispatch('websocket/WEBSOCKET_INIT', 'ws://59.78.194.23:9091/notification?id=' + userId);
 
         next()
       } catch (error) {
